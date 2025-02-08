@@ -3,6 +3,7 @@ import About from "./pages/About";
 import HomePage from "./pages/HomePage";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
+import NotFound from "./pages/NotFound";
 
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/*" element={<NotFound />} />
       </Routes>
     </Router>
   );
