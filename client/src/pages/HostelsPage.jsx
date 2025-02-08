@@ -18,10 +18,11 @@ import {
 import { Star, MapPin, Wifi, Car, Dumbbell } from "lucide-react";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
+import { useNavigate } from "react-router-dom";
 
 const mockHostels = [
   {
-    _id: "1",
+    id: "1",
     name: "Cozy Stay PG",
     location: "Mumbai",
     price: 5000,
@@ -32,7 +33,7 @@ const mockHostels = [
     distance: "2.5 km from center"
   },
   {
-    _id: "2",
+    id: "2",
     name: "Elite Hostel",
     location: "Delhi",
     price: 7000,
@@ -41,8 +42,7 @@ const mockHostels = [
     reviews: 95,
     image: "/api/placeholder/400/300",
     distance: "1.8 km from center"
-  },
-  // Add more mock data as needed
+  }
 ];
 
 const amenityIcons = {
@@ -62,7 +62,7 @@ export default function FindHostel() {
 
   const itemsPerPage = 6;
   const totalPages = Math.ceil(filteredHostels.length / itemsPerPage);
-
+  const navigate = useNavigate()
   useEffect(() => {
     setIsLoading(true);
     const timer = setTimeout(() => {
@@ -218,7 +218,9 @@ export default function FindHostel() {
                       </div>
                     ))}
                   </div>
-                  <Button className="w-full bg-purple-600 hover:bg-purple-700 transition-colors">
+                  <Button onClick={()=>{
+                    navigate(`/hostel/${hostel.id}`)
+                  }} className="w-full bg-purple-600 hover:bg-purple-700 transition-colors">
                     View Details
                   </Button>
                 </CardContent>
