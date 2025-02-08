@@ -26,6 +26,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useNavigate } from "react-router-dom";
 
 export default function HomePage() {
   const testimonials = [
@@ -83,7 +84,7 @@ export default function HomePage() {
   ];
 
   const plugin = useRef(Autoplay({ delay: 2000, stopOnInteraction: false }));
-
+  const navigate = useNavigate  ()
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <section className="relative min-h-screen flex flex-col md:flex-row items-center justify-center w-full px-6 md:px-16 pt-20 bg-gradient-to-br from-purple-50 via-white to-purple-50">
@@ -101,7 +102,8 @@ export default function HomePage() {
               community.
             </p>
           </div>
-          <Button className="rounded-full bg-purple-600 hover:bg-purple-700 transition-all duration-300 transform hover:scale-105 px-8 py-6 text-lg shadow-lg">
+          <Button
+          onClick={()=>navigate("/hostel")} className="rounded-full bg-purple-600 hover:bg-purple-700 transition-all duration-300 transform hover:scale-105 px-8 py-6 text-lg shadow-lg">
             Find a Hostel
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
