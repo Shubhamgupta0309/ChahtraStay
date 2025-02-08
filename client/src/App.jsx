@@ -4,6 +4,8 @@ import HomePage from "./pages/HomePage";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
+import HostelPage from "./pages/HostelsPage";
+import HostelDetails from "./pages/HostelDetails";
 
 
 function App() {
@@ -11,6 +13,8 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/hostel" element={<HostelPage />} />
+        <Route path="/hostel/:id" element={<HostelDetails />} />
         <Route path="/about" element={<About />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/login" element={<Login />} />
