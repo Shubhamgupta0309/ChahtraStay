@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import HostelPage from "./pages/HostelsPage";
 import HostelDetails from "./pages/HostelDetails";
+import HostelBooking from "./pages/BookHostel";
 
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/hostel" element={<HostelPage />} />
         <Route path="/hostel/:id" element={<HostelDetails />} />
+        <Route path="/hostel/:id/book" element={<HostelBooking />} />
         <Route path="/about" element={<About />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/login" element={<Login />} />
