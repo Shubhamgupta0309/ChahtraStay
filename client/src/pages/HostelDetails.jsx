@@ -27,6 +27,7 @@ import {
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import api from "@/api";
+import { toast } from "@/hooks/use-toast";
 
 export default function HostelDetails() {
   const { id } = useParams();
@@ -54,9 +55,8 @@ export default function HostelDetails() {
         console.error("Error sharing:", error);
       }
     } else {
-      // Fallback for browsers that don't support Web Share API
       navigator.clipboard.writeText(window.location.href);
-      alert("Link copied to clipboard!");
+      toast({title: "Link copied to clipboard!"});
     }
   };
 
