@@ -32,42 +32,42 @@ import { Toaster } from "@/components/ui/toaster";
 
 export default function HomePage() {
   const testimonials = [
-  {
-    id: 1,
-    img: "/dheeru.png",
-    name: "Dheeru Gupta",
-    review:
-      "ChahtraStay made my hostel search so much easier! The website is user-friendly, and I found the perfect place near my college within minutes.",
-  },
-  {
-    id: 2,
-    img: "/krsna.png",
-    name: "Krishna Gupta",
-    review:
-      "A fantastic platform for students! The detailed listings and Google Maps integration helped me find a comfortable and affordable hostel quickly.",
-  },
-  {
-    id: 3,
-    img: "/harshal.png",
-    name: "Harshal Dangela",
-    review:
-      "I was struggling to find a good hostel near my college, but ChahtraStay provided me with great options. The reviews and amenities section were really helpful!",
-  },
-  {
-    id: 4,
-    img: "/shubham.png",
-    name: "Shubham Gupta",
-    review:
-      "ChahtraStay saved me so much time! I could easily compare hostels, check prices, and choose the best one that suited my budget and needs.",
-  },
-  {
-    id: 5,
-    img: "/vidya.png",
-    name: "Vidya Bhaskar",
-    review:
-      "An amazing website for students looking for hostels. The platform provides all the necessary details, making the hostel search process smooth and stress-free.",
-  },
-];
+    {
+      id: 1,
+      img: "/dheeru.png",
+      name: "Dheeru Gupta",
+      review:
+        "ChahtraStay made my hostel search so much easier! The website is user-friendly, and I found the perfect place near my college within minutes.",
+    },
+    {
+      id: 2,
+      img: "/krsna.png",
+      name: "Krishna Gupta",
+      review:
+        "A fantastic platform for students! The detailed listings and Google Maps integration helped me find a comfortable and affordable hostel quickly.",
+    },
+    {
+      id: 3,
+      img: "/harshal.png",
+      name: "Harshal Dangela",
+      review:
+        "I was struggling to find a good hostel near my college, but ChahtraStay provided me with great options. The reviews and amenities section were really helpful!",
+    },
+    {
+      id: 4,
+      img: "/shubham.png",
+      name: "Shubham Gupta",
+      review:
+        "ChahtraStay saved me so much time! I could easily compare hostels, check prices, and choose the best one that suited my budget and needs.",
+    },
+    {
+      id: 5,
+      img: "/vidya.png",
+      name: "Vidya Bhaskar",
+      review:
+        "An amazing website for students looking for hostels. The platform provides all the necessary details, making the hostel search process smooth and stress-free.",
+    },
+  ];
 
   const [hostels, setHostels] = useState([]);
   useEffect(() => {
@@ -77,20 +77,11 @@ export default function HomePage() {
     };
     fetchHostels();
   }, []);
-
-  // const hostels = [
-  //   {
-  //     name: "Student Haven",
-  //     img: "/hero-page.png",
-  //     hostelId: "212",
-  //   },
-  // ];
-
   const plugin = useRef(Autoplay({ delay: 2000, stopOnInteraction: false }));
   const navigate = useNavigate();
   return (
     <div className="flex flex-col min-h-screen bg-white">
-      <Toaster/>
+      <Toaster />
       <section className="relative min-h-screen flex flex-col md:flex-row items-center justify-center w-full px-6 md:px-16 pt-20 bg-gradient-to-br from-purple-50 via-white to-purple-50">
         <div className="flex flex-col items-start md:w-1/2 space-y-6 z-10">
           <div className="space-y-4">
@@ -191,7 +182,10 @@ export default function HomePage() {
                           alt={hostel.name}
                           className="w-full h-64 object-cover rounded-lg hover:opacity-90 transition-opacity duration-300"
                         />
-                        <Button onClick={()=>navigate(`/hostel/${hostel.hostelId}`)} className="mt-6 bg-purple-600 hover:bg-purple-700 transition-all duration-300 transform hover:scale-105 shadow-md rounded-full">
+                        <Button
+                          onClick={() => navigate(`/hostel/${hostel.hostelId}`)}
+                          className="mt-6 bg-purple-600 hover:bg-purple-700 transition-all duration-300 transform hover:scale-105 shadow-md rounded-full"
+                        >
                           View Details
                         </Button>
                       </CardContent>
