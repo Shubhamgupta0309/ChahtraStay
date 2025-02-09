@@ -72,7 +72,6 @@ const AdminDashboard = () => {
 
   const handleAdminRole = async (userId, makeAdmin) => {
     try {
-      console.log("hello");
       const endpoint = makeAdmin
         ? `/api/user/make-admin/${userId}`
         : `/api/user/remove-admin/${userId}`;
