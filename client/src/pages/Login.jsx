@@ -1,202 +1,97 @@
-import React from "react";
+import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "@/context/AuthContext";
+import api from "../api.js";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Github, Mail, AlertCircle } from "lucide-react";
+import { Github, Mail, AlertCircle, CheckCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useToast } from "@/hooks/use-toast.js";
+import { Toaster } from "@/components/ui/toaster.jsx";
 
 export default function AuthPage() {
-  const handleLogin = (e) => {
+  const { login } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const { toast } = useToast();
+
+  const handleAuth = async (e, type) => {
     e.preventDefault();
-    // Add login logic here
-  };
+    setLoading(true);
+    setError("");
 
-  const handleSignUp = (e) => {
-    e.preventDefault();
-    // Add sign up logic here
-  };
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
 
-  const handleGoogleLogin = () => {
-    // Add Google login logic here
-  };
+    try {
+      const endpoint = type === "login" ? "/api/user/login" : "/api/user/signup";
+      const response = await api.post(endpoint, data);
+      
+      toast({
+        title: type === "login" ? "Welcome Back!" : "Account Created Successfully",
+        description: type === "login" ? "You are now logged in." : "Please log in to continue.",
+        icon: <CheckCircle className="text-green-500" />, 
+      });
 
-  const handleGithubLogin = () => {
-    // Add Github login logic here
+      login(response?.data?.token);
+      navigate("/");
+    } catch (err) {
+      let errorMsg = "An error occurred. Please try again.";
+      if (err.response) {
+        errorMsg = err.response.data.message || errorMsg;
+      }
+      setError(errorMsg);
+      toast({
+        title: "Error",
+        description: errorMsg,
+        variant: "destructive",
+        icon: <AlertCircle className="text-red-500" />,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <Card className="w-full max-w-md">
-        <CardContent className="pt-6">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+      <Card className="w-full max-w-md shadow-lg rounded-xl">
+        <Toaster/>
+        <CardContent className="p-6">
+          <h2 className="text-center text-2xl font-bold text-gray-900">ScaleUp Network</h2>
+          <p className="text-center text-gray-600 mb-4">Welcome! Sign in or create an account.</p>
           <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-8">
+            <TabsList className="grid w-full grid-cols-2 mb-6">
               <TabsTrigger value="login">Login</TabsTrigger>
               <TabsTrigger value="signup">Sign Up</TabsTrigger>
             </TabsList>
 
             <TabsContent value="login">
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <div className="relative">
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="Enter your email"
-                      required
-                      className="pl-10"
-                    />
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="password">Password</Label>
-                    <Button variant="link" className="px-0 text-sm">
-                      Forgot password?
-                    </Button>
-                  </div>
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="Enter your password"
-                    required
-                  />
-                </div>
-
-                <Button type="submit" className="w-full">
-                  Sign in
-                </Button>
-
-                <div className="relative my-6">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-200" />
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="bg-white px-2 text-gray-500">
-                      Or continue with
-                    </span>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <Button
-                    variant="outline"
-                    onClick={handleGoogleLogin}
-                    className="w-full"
-                  >
-                    <img
-                      src="/api/placeholder/20/20"
-                      alt="Google"
-                      className="mr-2 h-5 w-5"
-                    />
-                    Google
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={handleGithubLogin}
-                    className="w-full"
-                  >
-                    <Github className="mr-2 h-5 w-5" />
-                    GitHub
-                  </Button>
-                </div>
+              {error && <Alert variant="destructive"><AlertDescription>{error}</AlertDescription></Alert>}
+              <form onSubmit={(e) => handleAuth(e, "login")} className="space-y-4">
+                <Label>Email</Label>
+                <Input type="email" name="email" placeholder="Enter your email" required />
+                <Label>Password</Label>
+                <Input type="password" name="password" placeholder="Enter your password" required />
+                <Button type="submit" className="w-full" disabled={loading}>{loading ? "Signing in..." : "Sign in"}</Button>
               </form>
             </TabsContent>
 
             <TabsContent value="signup">
-              <form onSubmit={handleSignUp} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Full Name</Label>
-                  <Input
-                    id="name"
-                    type="text"
-                    placeholder="Enter your full name"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="signup-email">Email</Label>
-                  <div className="relative">
-                    <Input
-                      id="signup-email"
-                      type="email"
-                      placeholder="Enter your email"
-                      required
-                      className="pl-10"
-                    />
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="signup-password">Password</Label>
-                  <Input
-                    id="signup-password"
-                    type="password"
-                    placeholder="Create a password"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="confirm-password">Confirm Password</Label>
-                  <Input
-                    id="confirm-password"
-                    type="password"
-                    placeholder="Confirm your password"
-                    required
-                  />
-                </div>
-
-                <Alert variant="default" className="bg-blue-50 text-blue-800 border-blue-200">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>
-                    Password must be at least 8 characters long and include a number and special character.
-                  </AlertDescription>
-                </Alert>
-
-                <Button type="submit" className="w-full">
-                  Create Account
-                </Button>
-
-                <div className="relative my-6">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-200" />
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="bg-white px-2 text-gray-500">
-                      Or sign up with
-                    </span>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <Button
-                    variant="outline"
-                    onClick={handleGoogleLogin}
-                    className="w-full"
-                  >
-                    <img
-                      src="/api/placeholder/20/20"
-                      alt="Google"
-                      className="mr-2 h-5 w-5"
-                    />
-                    Google
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={handleGithubLogin}
-                    className="w-full"
-                  >
-                    <Github className="mr-2 h-5 w-5" />
-                    GitHub
-                  </Button>
-                </div>
+              {error && <Alert variant="destructive"><AlertDescription>{error}</AlertDescription></Alert>}
+              <form onSubmit={(e) => handleAuth(e, "signup")} className="space-y-4">
+                <Label>Full Name</Label>
+                <Input type="text" name="name" placeholder="Enter your full name" required />
+                <Label>Email</Label>
+                <Input type="email" name="email" placeholder="Enter your email" required />
+                <Label>Phone Number</Label>
+                <Input type="text" name="phone" placeholder="Enter your phone number" required />
+                <Label>Password</Label>
+                <Input type="password" name="password" placeholder="Create a password" required />
+                <Button type="submit" className="w-full" disabled={loading}>{loading ? "Creating account..." : "Create Account"}</Button>
               </form>
             </TabsContent>
           </Tabs>
