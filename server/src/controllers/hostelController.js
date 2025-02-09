@@ -58,7 +58,7 @@ export const createHostel = async (req, res) => {
 
     return res.status(201).json({ message: "Hostel Created", newHostel });
   } catch (error) {
-    console.error(`Internal Server Error: ${error.message}`);
+    console.error(error);
     res.status(500).json({ message: error.message });
   }
 };
