@@ -1,6 +1,5 @@
 import express from "express";
 import Booking from "../model/BookingModel.js"
-import { protect, adminOnly } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
@@ -39,7 +38,6 @@ export const createBooking = async (req, res) => {
   }
 };
 
-// Get all bookings (admin only)
 export const getAllBookings = async (req, res) => {
   try {
     const bookings = await Booking.find();
@@ -49,7 +47,6 @@ export const getAllBookings = async (req, res) => {
   }
 };
 
-// Get user's bookings
 export const getUserBookings = async (req, res) => {
   try {
     if (!req.user) {
@@ -62,7 +59,6 @@ export const getUserBookings = async (req, res) => {
   }
 };
 
-// Get booking by ID
 export const getBookingById = async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.id);
@@ -73,7 +69,6 @@ export const getBookingById = async (req, res) => {
   }
 };
 
-// Cancel a booking (updates status to "cancelled" instead of deleting)
 export const cancelBooking = async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.id);
@@ -104,7 +99,6 @@ export const confirmBooking = async (req, res) => {
   }
 };
 
-// Generate a receipt for a confirmed booking
 export const generateReceipt = async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.id);
