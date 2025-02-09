@@ -62,3 +62,61 @@ export const logoutUser = (req, res) => {
   res.cookie("token", "", { httpOnly: true, expires: new Date(0) });
   res.json({ message: "Logged out successfully" });
 };
+
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find({}, "-password"); 
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getUserById = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id, "-password");
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+export const makeAdmin = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    user.role = "admin";
+    await user.save();
+
+    res.status(200).json({ message: "User promoted to admin", user });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+export const removeAdmin = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    user.role = "user"; 
+    await user.save();
+
+    res.status(200).json({ message: "Admin demoted to user", user });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await User.findByIdAndDelete(id);
+    res.status(200).json({ message: "User deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
