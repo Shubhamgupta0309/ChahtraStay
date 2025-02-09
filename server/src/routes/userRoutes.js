@@ -7,6 +7,7 @@ import {
   getAllUsers,
   getUserById,
   removeAdmin,
+  getProfile,
 } from "../controllers/userController.js";
 import { protect, adminOnly } from "../middlewares/authMiddleware.js";
 
@@ -22,6 +23,7 @@ router.post("/signup", registerUser);
 router.post("/login", loginUser);
 
 router.get("/all", protect, adminOnly, getAllUsers);
+router.get("/profile", protect, getProfile);
 
 router.get("/:id", protect, getUserById);
 
