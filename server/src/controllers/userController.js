@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 
 export const registerUser = async (req, res) => {
   try {
-    console.log(req.body)
+    console.log(req.body);
     const { name, email, password, phone, role } = req.body;
     if (!name || !email || !password) {
       return res.status(400).json({
@@ -23,7 +23,7 @@ export const registerUser = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
-    res.status(201).json({ message: "User registered successfully" ,token});
+    res.status(201).json({ message: "User registered successfully", token });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
@@ -66,10 +66,39 @@ export const logoutUser = (req, res) => {
   res.cookie("token", "", { httpOnly: true, expires: new Date(0) });
   res.json({ message: "Logged out successfully" });
 };
+export const searchUser = async (req, res) => {
+  try {
+    const { query, role } = req.query;
+
+    let filter = {};
+
+    if (query) {
+      filter.$or = [
+        { name: { $regex: query, $options: "i" } },
+        { email: { $regex: query, $options: "i" } },
+        { phone: { $regex: query, $options: "i" } },
+      ];
+    }
+
+    if (role) {
+      filter.role = role;
+    }
+
+    const users = await User.find(filter).select("-password");
+
+    if (users.length === 0) {
+      return res.status(404).json({ message: "No users found" });
+    }
+
+    res.status(200).json({ message: "Users found", users });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
 
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find({}, "-password"); 
+    const users = await User.find({}, "-password");
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -86,7 +115,6 @@ export const getUserById = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 export const makeAdmin = async (req, res) => {
   try {
@@ -106,7 +134,7 @@ export const removeAdmin = async (req, res) => {
     const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    user.role = "user"; 
+    user.role = "user";
     await user.save();
 
     res.status(200).json({ message: "Admin demoted to user", user });
@@ -124,16 +152,13 @@ export const deleteUser = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-export const getProfile = async(req,res)=>{
-try {
-  const user = req?.user
-  const userData = await User.findById(user._id).select("-password")
-  return res.status(200).json({
-    message:"Fetched Profile",
-    userData
-  })
-
-} catch (error) {
-  
-}
-}
+export const getProfile = async (req, res) => {
+  try {
+    const user = req?.user;
+    const userData = await User.findById(user._id).select("-password");
+    return res.status(200).json({
+      message: "Fetched Profile",
+      userData,
+    });
+  } catch (error) {}
+};

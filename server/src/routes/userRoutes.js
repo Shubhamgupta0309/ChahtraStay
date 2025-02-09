@@ -8,6 +8,7 @@ import {
   getUserById,
   removeAdmin,
   getProfile,
+  searchUser,
 } from "../controllers/userController.js";
 import { protect, adminOnly } from "../middlewares/authMiddleware.js";
 
@@ -23,6 +24,7 @@ router.post("/signup", registerUser);
 router.post("/login", loginUser);
 
 router.get("/all", protect, adminOnly, getAllUsers);
+router.get("/search", protect, adminOnly, searchUser);
 router.get("/profile", protect, getProfile);
 
 router.get("/:id", protect, getUserById);
