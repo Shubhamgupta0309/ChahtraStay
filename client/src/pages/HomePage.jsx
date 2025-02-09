@@ -19,7 +19,7 @@ import {
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Autoplay from "embla-carousel-autoplay";
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -27,64 +27,66 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { useNavigate } from "react-router-dom";
+import api from "@/api";
 
 export default function HomePage() {
   const testimonials = [
-    {
-      id: 1,
-      img: "/icon.png",
-      name: "Krishna Gupta",
-      review:
-        "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Blanditiis consequatur nam expedita ea atque asperiores",
-    },
-    {
-      id: 2,
-      img: "/icon.png",
-      name: "Rahul Sharma",
-      review:
-        "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Blanditiis consequatur nam expedita ea atque asperiores",
-    },
-    {
-      id: 3,
-      img: "/icon.png",
-      name: "Priya Patel",
-      review:
-        "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Blanditiis consequatur nam expedita ea atque asperiores",
-    },
-    {
-      id: 4,
-      img: "/icon.png",
-      name: "Amit Kumar",
-      review:
-        "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Blanditiis consequatur nam expedita ea atque asperiores",
-    },
-  ];
+  {
+    id: 1,
+    img: "/dheeru.png",
+    name: "Dheeru Gupta",
+    review:
+      "ChahtraStay made my hostel search so much easier! The website is user-friendly, and I found the perfect place near my college within minutes.",
+  },
+  {
+    id: 2,
+    img: "/krsna.png",
+    name: "Krishna Gupta",
+    review:
+      "A fantastic platform for students! The detailed listings and Google Maps integration helped me find a comfortable and affordable hostel quickly.",
+  },
+  {
+    id: 3,
+    img: "/harshal.png",
+    name: "Harshal Dangela",
+    review:
+      "I was struggling to find a good hostel near my college, but ChahtraStay provided me with great options. The reviews and amenities section were really helpful!",
+  },
+  {
+    id: 4,
+    img: "/shubham.png",
+    name: "Shubham Gupta",
+    review:
+      "ChahtraStay saved me so much time! I could easily compare hostels, check prices, and choose the best one that suited my budget and needs.",
+  },
+  {
+    id: 5,
+    img: "/vidya.png",
+    name: "Vidya Bhaskar",
+    review:
+      "An amazing website for students looking for hostels. The platform provides all the necessary details, making the hostel search process smooth and stress-free.",
+  },
+];
 
-  const hostels = [
-    {
-      name: "Student Haven",
-      img: "/hero-page.png",
-      hostelId: "212",
-    },
-    {
-      name: "Scholar's Nest",
-      img: "/hero-page.png",
-      hostelId: "213",
-    },
-    {
-      name: "Campus Life",
-      img: "/hero-page.png",
-      hostelId: "214",
-    },
-    {
-      name: "Academic House",
-      img: "/hero-page.png",
-      hostelId: "215",
-    },
-  ];
+  const [hostels, setHostels] = useState([]);
+  useEffect(() => {
+    const fetchHostels = async () => {
+      const res = await api.get("/api/hostel");
+      setHostels(res.data);
+    };
+    fetchHostels();
+  }, []);
+
+  // const hostels = [
+  //   {
+  //     name: "Student Haven",
+  //     img: "/hero-page.png",
+  //     hostelId: "212",
+  //   },
+  // ];
 
   const plugin = useRef(Autoplay({ delay: 2000, stopOnInteraction: false }));
-  const navigate = useNavigate  ()
+  const navigate = useNavigate();
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <section className="relative min-h-screen flex flex-col md:flex-row items-center justify-center w-full px-6 md:px-16 pt-20 bg-gradient-to-br from-purple-50 via-white to-purple-50">
@@ -103,7 +105,9 @@ export default function HomePage() {
             </p>
           </div>
           <Button
-          onClick={()=>navigate("/hostel")} className="rounded-full bg-purple-600 hover:bg-purple-700 transition-all duration-300 transform hover:scale-105 px-8 py-6 text-lg shadow-lg">
+            onClick={() => navigate("/hostel")}
+            className="rounded-full bg-purple-600 hover:bg-purple-700 transition-all duration-300 transform hover:scale-105 px-8 py-6 text-lg shadow-lg"
+          >
             Find a Hostel
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
@@ -181,11 +185,11 @@ export default function HomePage() {
                       </CardTitle>
                       <CardContent className="flex flex-col items-center p-0">
                         <img
-                          src={hostel.img}
+                          src={hostel.images[0]}
                           alt={hostel.name}
                           className="w-full h-64 object-cover rounded-lg hover:opacity-90 transition-opacity duration-300"
                         />
-                        <Button className="mt-6 bg-purple-600 hover:bg-purple-700 transition-all duration-300 transform hover:scale-105 shadow-md rounded-full">
+                        <Button onClick={()=>navigate(`/hostel/${hostel.hostelId}`)} className="mt-6 bg-purple-600 hover:bg-purple-700 transition-all duration-300 transform hover:scale-105 shadow-md rounded-full">
                           View Details
                         </Button>
                       </CardContent>
@@ -242,7 +246,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* FAQ Section */}
       <section className="py-20 bg-purple-50">
         <div className="container mx-auto px-4 max-w-3xl">
           <h2 className="text-4xl font-bold text-center mb-12 text-gray-900">

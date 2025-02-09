@@ -42,8 +42,9 @@ const AdminDashboard = () => {
     location: "",
     price: "",
     amenities: "",
-    hostelType: "boys",
+    hostelType: "",
     rules: "",
+    food: "",
     mapLink: "",
   });
 
@@ -71,7 +72,7 @@ const AdminDashboard = () => {
 
   const handleAdminRole = async (userId, makeAdmin) => {
     try {
-      console.log('hello')
+      console.log("hello");
       const endpoint = makeAdmin
         ? `/api/user/make-admin/${userId}`
         : `/api/user/remove-admin/${userId}`;
@@ -114,45 +115,75 @@ const AdminDashboard = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (
-      !formData.name ||
-      !formData.location ||
-      !formData.price ||
+      !formData.name.trim() ||
+      !formData.location.trim() ||
+      !formData.price.trim() ||
       selectedFiles.length === 0
     ) {
       toast({
-        title:
+        variant: "destructive",
+        title: "Validation Error",
+        description:
           "Please fill in all required fields and upload at least one image.",
       });
       return;
     }
-
+  
+    if (isNaN(formData.price) || Number(formData.price) <= 0) {
+      toast({
+        variant: "destructive",
+        title: "Invalid Price",
+        description: "Please enter a valid positive price.",
+      });
+      return;
+    }
+  
+    if (
+      formData.mapLink &&
+      !/^(https?:\/\/)?(www\.)?[\w-]+(\.[\w-]+)+[/#?]?.*$/.test(formData.mapLink)
+    ) {
+      toast({
+        variant: "destructive",
+        title: "Invalid Map Link",
+        description: "Please enter a valid map URL.",
+      });
+      return;
+    }
+  
     setFormLoading(true);
-
+  
     const data = new FormData();
+  
     Object.keys(formData).forEach((key) => {
       if (key === "amenities" || key === "rules") {
-        const array = formData[key].split(",").map((item) => item.trim());
+        const array = formData[key]
+          .split(",")
+          .map((item) => item.trim())
+          .filter((item) => item); 
         array.forEach((item) => data.append(key, item));
       } else {
         data.append(key, formData[key]);
       }
     });
-
+  
     selectedFiles.forEach((file) => {
       data.append("images", file);
     });
-
+  
     try {
       const response = await api.post("/api/hostel/", data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-
-      toast({ title: "Hostel added successfully!" });
-
+  
+      toast({
+        title: "Success!",
+        description: "Hostel added successfully.",
+      });
+  
       setHostels((prev) => [...prev, response.data]);
-
+  
       setFormData({
         name: "",
         location: "",
@@ -168,12 +199,13 @@ const AdminDashboard = () => {
       toast({
         variant: "destructive",
         title: "Error while adding",
-        description: "Try Again after some time",
+        description: error.response?.data?.message || "Try again later.",
       });
     } finally {
       setFormLoading(false);
     }
   };
+  
 
   if (loading) {
     return (
@@ -561,6 +593,22 @@ const AdminDashboard = () => {
                       name="amenities"
                       placeholder="WiFi, AC, Laundry, etc."
                       value={formData.amenities}
+                      onChange={handleChange}
+                      className="w-full mt-1 h-24 rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="food"
+                      className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      Food (comma-separated)
+                    </label>
+                    <Textarea
+                      id="food"
+                      name="food"
+                      placeholder="Veg,Non-veg, Mess available or not"
+                      value={formData.food}
                       onChange={handleChange}
                       className="w-full mt-1 h-24 rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                     />
