@@ -28,6 +28,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import SearchCard from "@/components/adminPage/SearchCard";
 import UserSearch from "@/components/adminPage/UserSearch";
+import Header from "@/components/Header";
 
 const AdminDashboard = () => {
   const [hostels, setHostels] = useState([]);
@@ -70,10 +71,11 @@ const AdminDashboard = () => {
 
   const handleAdminRole = async (userId, makeAdmin) => {
     try {
+      console.log('hello')
       const endpoint = makeAdmin
         ? `/api/user/make-admin/${userId}`
         : `/api/user/remove-admin/${userId}`;
-      const response = await api.put(endpoint);
+      const response = await api.patch(endpoint);
       setUsers(
         users.map((user) => (user._id === userId ? response.data.user : user))
       );
@@ -119,9 +121,10 @@ const AdminDashboard = () => {
       !formData.price ||
       selectedFiles.length === 0
     ) {
-      alert(
-        "Please fill in all required fields and upload at least one image."
-      );
+      toast({
+        title:
+          "Please fill in all required fields and upload at least one image.",
+      });
       return;
     }
 
@@ -146,7 +149,7 @@ const AdminDashboard = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      alert("Hostel added successfully!");
+      toast({ title: "Hostel added successfully!" });
 
       setHostels((prev) => [...prev, response.data]);
 
@@ -182,15 +185,19 @@ const AdminDashboard = () => {
 
   return (
     <div className="p-6 space-y-6">
+      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-10">
+        <Header />
+      </div>
+
       <h1 className="text-3xl font-bold">Admin Dashboard</h1>
       <Toaster />
-      <section className="grid grid-cols-2 gap-6 p-6 md:grid-cols-3 lg:grid-cols-4">
-        <Card className="p-4 shadow-lg border border-gray-200 dark:border-gray-700">
-          <CardTitle className="flex items-center gap-3 text-lg font-semibold">
+      <section className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <Card className="p-5 shadow-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 rounded-xl hover:shadow-xl transition-shadow">
+          <CardTitle className="flex items-center gap-3 text-lg font-semibold text-gray-800 dark:text-white">
             <Users className="w-6 h-6 text-blue-500" />
             Total Users
           </CardTitle>
-          <CardContent className="text-2xl font-bold">
+          <CardContent className="text-3xl font-bold text-gray-900 dark:text-gray-100">
             <CountUp
               start={0}
               end={users ? users.length : 0}
@@ -199,12 +206,13 @@ const AdminDashboard = () => {
             />
           </CardContent>
         </Card>
-        <Card className="p-4 shadow-lg border border-gray-200 dark:border-gray-700">
-          <CardTitle className="flex items-center gap-3 text-lg font-semibold">
+
+        <Card className="p-5 shadow-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 rounded-xl hover:shadow-xl transition-shadow">
+          <CardTitle className="flex items-center gap-3 text-lg font-semibold text-gray-800 dark:text-white">
             <Building2 className="w-6 h-6 text-green-500" />
             Total Hostels
           </CardTitle>
-          <CardContent className="text-2xl font-bold">
+          <CardContent className="text-3xl font-bold text-gray-900 dark:text-gray-100">
             <CountUp
               start={0}
               end={hostels ? hostels.length : 0}
@@ -455,19 +463,20 @@ const AdminDashboard = () => {
         <SearchCard hostels={hostels} />
       </section>
       <section className="flex flex-row">
-        <Card className="w-full p-4">
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold">Add Hostel</CardTitle>
+        <Card className="w-full max-w-3xl mx-auto p-6 shadow-lg rounded-xl bg-white dark:bg-gray-900">
+          <CardHeader className="border-b pb-4">
+            <CardTitle className="text-3xl font-semibold text-gray-900 dark:text-white">
+              Add Hostel
+            </CardTitle>
           </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Basic Information */}
-                <div className="space-y-4">
+          <CardContent className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-6">
                   <div>
                     <label
                       htmlFor="name"
-                      className="block text-sm font-medium mb-1"
+                      className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       Hostel Name*
                     </label>
@@ -478,14 +487,13 @@ const AdminDashboard = () => {
                       value={formData.name}
                       onChange={handleChange}
                       required
-                      className="w-full"
+                      className="w-full mt-1 rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                     />
                   </div>
-
                   <div>
                     <label
                       htmlFor="location"
-                      className="block text-sm font-medium mb-1"
+                      className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       Location*
                     </label>
@@ -496,14 +504,13 @@ const AdminDashboard = () => {
                       value={formData.location}
                       onChange={handleChange}
                       required
-                      className="w-full"
+                      className="w-full mt-1 rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                     />
                   </div>
-
                   <div>
                     <label
                       htmlFor="price"
-                      className="block text-sm font-medium mb-1"
+                      className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       Price per Month (₹)*
                     </label>
@@ -516,14 +523,13 @@ const AdminDashboard = () => {
                       onChange={handleChange}
                       required
                       min="0"
-                      className="w-full"
+                      className="w-full mt-1 rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                     />
                   </div>
-
                   <div>
                     <label
                       htmlFor="hostelType"
-                      className="block text-sm font-medium mb-1"
+                      className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       Hostel Type*
                     </label>
@@ -531,7 +537,7 @@ const AdminDashboard = () => {
                       value={formData.hostelType}
                       onValueChange={handleSelectChange}
                     >
-                      <SelectTrigger className="w-full">
+                      <SelectTrigger className="w-full mt-1 rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                         <SelectValue placeholder="Select hostel type" />
                       </SelectTrigger>
                       <SelectContent>
@@ -542,13 +548,11 @@ const AdminDashboard = () => {
                     </Select>
                   </div>
                 </div>
-
-                {/* Additional Information */}
-                <div className="space-y-4">
+                <div className="space-y-6">
                   <div>
                     <label
                       htmlFor="amenities"
-                      className="block text-sm font-medium mb-1"
+                      className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       Amenities (comma-separated)
                     </label>
@@ -558,14 +562,13 @@ const AdminDashboard = () => {
                       placeholder="WiFi, AC, Laundry, etc."
                       value={formData.amenities}
                       onChange={handleChange}
-                      className="w-full h-24"
+                      className="w-full mt-1 h-24 rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                     />
                   </div>
-
                   <div>
                     <label
                       htmlFor="rules"
-                      className="block text-sm font-medium mb-1"
+                      className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       Rules (comma-separated)
                     </label>
@@ -575,14 +578,13 @@ const AdminDashboard = () => {
                       placeholder="No smoking, No loud music after 10 PM, etc."
                       value={formData.rules}
                       onChange={handleChange}
-                      className="w-full h-24"
+                      className="w-full mt-1 h-24 rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                     />
                   </div>
-
                   <div>
                     <label
                       htmlFor="mapLink"
-                      className="block text-sm font-medium mb-1"
+                      className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       Google Maps Link
                     </label>
@@ -592,24 +594,22 @@ const AdminDashboard = () => {
                       placeholder="Enter Google Maps link"
                       value={formData.mapLink}
                       onChange={handleChange}
-                      className="w-full"
+                      className="w-full mt-1 rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                     />
                   </div>
                 </div>
               </div>
-
-              {/* Images Upload */}
-              <div className="mt-4">
+              <div className="mt-6">
                 <label
                   htmlFor="images"
-                  className="block text-sm font-medium mb-1"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                 >
                   Hostel Images*
                 </label>
-                <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-md">
-                  <div className="space-y-1 text-center">
+                <div className="mt-1 flex justify-center p-6 border-2 border-dashed border-gray-300 rounded-lg dark:border-gray-700">
+                  <div className="space-y-2 text-center">
                     <svg
-                      className="mx-auto h-12 w-12 text-gray-400"
+                      className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500"
                       stroke="currentColor"
                       fill="none"
                       viewBox="0 0 48 48"
@@ -622,10 +622,10 @@ const AdminDashboard = () => {
                         strokeLinejoin="round"
                       />
                     </svg>
-                    <div className="flex text-sm text-gray-600">
+                    <div className="text-sm text-gray-600 dark:text-gray-400">
                       <label
                         htmlFor="images"
-                        className="relative cursor-pointer rounded-md font-medium text-primary hover:text-primary/90 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary"
+                        className="cursor-pointer text-primary hover:text-primary/90"
                       >
                         <span>Upload images</span>
                         <input
@@ -641,36 +641,18 @@ const AdminDashboard = () => {
                       </label>
                       <p className="pl-1">or drag and drop</p>
                     </div>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
                       PNG, JPG, GIF up to 10MB
                     </p>
                   </div>
                 </div>
-                {selectedFiles.length > 0 && (
-                  <div className="mt-2">
-                    <p className="text-sm text-gray-500">
-                      {selectedFiles.length} image
-                      {selectedFiles.length > 1 ? "s" : ""} selected
-                    </p>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {Array.from(selectedFiles).map((file, index) => (
-                        <div
-                          key={index}
-                          className="relative group bg-gray-100 rounded-md p-2"
-                        >
-                          <p className="text-xs truncate max-w-[150px]">
-                            {file.name}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </div>
-
-              {/* Submit Button */}
               <div className="mt-6">
-                <Button type="submit" className="w-full" disabled={formLoading}>
+                <Button
+                  type="submit"
+                  className="w-full rounded-lg bg-primary text-white py-3 hover:bg-primary/90"
+                  disabled={formLoading}
+                >
                   {formLoading ? (
                     <div className="flex items-center justify-center">
                       <div className="w-5 h-5 border-t-2 border-b-2 border-white rounded-full animate-spin mr-2" />
