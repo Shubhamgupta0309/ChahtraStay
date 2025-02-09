@@ -4,7 +4,6 @@ import jwt from "jsonwebtoken";
 
 export const registerUser = async (req, res) => {
   try {
-    console.log(req.body);
     const { name, email, password, phone, role } = req.body;
     if (!name || !email || !password) {
       return res.status(400).json({
