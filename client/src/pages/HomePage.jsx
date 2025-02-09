@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/accordion";
 import { useNavigate } from "react-router-dom";
 import api from "@/api";
+import { Toaster } from "@/components/ui/toaster";
 
 export default function HomePage() {
   const testimonials = [
@@ -89,6 +90,7 @@ export default function HomePage() {
   const navigate = useNavigate();
   return (
     <div className="flex flex-col min-h-screen bg-white">
+      <Toaster/>
       <section className="relative min-h-screen flex flex-col md:flex-row items-center justify-center w-full px-6 md:px-16 pt-20 bg-gradient-to-br from-purple-50 via-white to-purple-50">
         <div className="flex flex-col items-start md:w-1/2 space-y-6 z-10">
           <div className="space-y-4">
