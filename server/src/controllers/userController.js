@@ -18,8 +18,12 @@ export const registerUser = async (req, res) => {
     const newUser = new User({ name, email, password, phone, role });
 
     await newUser.save();
-
-    res.status(201).json({ message: "User registered successfully" });
+    const token = jwt.sign(
+      { id: newUser._id, role: "user" },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+    res.status(201).json({ message: "User registered successfully" ,token});
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
@@ -120,3 +124,16 @@ export const deleteUser = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+export const getProfile = async(req,res)=>{
+try {
+  const user = req?.user
+  const userData = await User.findById(user._id).select("-password")
+  return res.status(200).json({
+    message:"Fetched Profile",
+    userData
+  })
+
+} catch (error) {
+  
+}
+}
