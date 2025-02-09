@@ -19,31 +19,7 @@ import { Star, MapPin, Wifi, Car, Dumbbell } from "lucide-react";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { useNavigate } from "react-router-dom";
-
-const mockHostels = [
-  {
-    id: "1",
-    name: "Cozy Stay PG",
-    location: "Mumbai",
-    price: 5000,
-    amenities: ["WiFi", "Laundry", "AC"],
-    rating: 4.5,
-    reviews: 128,
-    image: "/api/placeholder/400/300",
-    distance: "2.5 km from center"
-  },
-  {
-    id: "2",
-    name: "Elite Hostel",
-    location: "Delhi",
-    price: 7000,
-    amenities: ["WiFi", "Parking", "Gym"],
-    rating: 4.2,
-    reviews: 95,
-    image: "/api/placeholder/400/300",
-    distance: "1.8 km from center"
-  }
-];
+import api from "../api";
 
 const amenityIcons = {
   WiFi: <Wifi className="h-4 w-4" />,
@@ -52,35 +28,53 @@ const amenityIcons = {
 };
 
 export default function FindHostel() {
-  const [hostels, setHostels] = useState(mockHostels);
-  const [filteredHostels, setFilteredHostels] = useState(mockHostels);
+  const [hostels, setHostels] = useState([]);
+  const [filteredHostels, setFilteredHostels] = useState([]);
   const [search, setSearch] = useState("");
   const [location, setLocation] = useState("all");
   const [price, setPrice] = useState("none");
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true); 
+      try {
+        const res = await api.get("/api/hostel/");
+        setHostels(res.data);
+        setIsLoading(false); 
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setIsLoading(false); 
+      }
+    };
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (hostels.length) {
+      setIsLoading(true); 
+      const timer = setTimeout(() => {
+        let filtered = hostels.filter((hostel) => {
+          return (
+            (search === "" ||
+              hostel.name.toLowerCase().includes(search.toLowerCase()) ||
+              hostel.location.toLowerCase().includes(search.toLowerCase())) &&
+            (location === "all" || hostel.location.includes(location)) &&
+            (price === "none" || hostel.price <= parseInt(price))
+          );
+        });
+        setFilteredHostels(filtered);
+        setIsLoading(false); 
+      }, 300); 
+
+      return () => clearTimeout(timer); 
+    }
+  }, [search, location, price, hostels]);
 
   const itemsPerPage = 6;
   const totalPages = Math.ceil(filteredHostels.length / itemsPerPage);
-  const navigate = useNavigate()
-  useEffect(() => {
-    setIsLoading(true);
-    const timer = setTimeout(() => {
-      let filtered = hostels.filter((hostel) => {
-        return (
-          (search === "" || 
-           hostel.name.toLowerCase().includes(search.toLowerCase()) ||
-           hostel.location.toLowerCase().includes(search.toLowerCase())) &&
-          (location === "all" || hostel.location === location) &&
-          (price === "none" || hostel.price <= parseInt(price))
-        );
-      });
-      setFilteredHostels(filtered);
-      setIsLoading(false);
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, [search, location, price, hostels]);
 
   const paginatedHostels = filteredHostels.slice(
     (page - 1) * itemsPerPage,
@@ -100,19 +94,22 @@ export default function FindHostel() {
     ));
   };
 
+  const goToPreviousPage = () => setPage(Math.max(1, page - 1));
+  const goToNextPage = () => setPage(Math.min(totalPages, page + 1));
+
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-purple-50 to-white">
-
       <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-10">
         <Header />
       </div>
-      
+
       <main className="container mx-auto px-4 py-16">
         <h1 className="text-4xl font-bold text-center mb-2 text-gray-900">
           Find Your Perfect Stay
         </h1>
         <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
-          Browse through our curated selection of hostels and PGs designed for students
+          Browse through our curated selection of hostels and PGs designed for
+          students
         </p>
 
         <div className="flex flex-wrap gap-4 justify-center mb-12 max-w-4xl mx-auto">
@@ -122,7 +119,7 @@ export default function FindHostel() {
             onChange={(e) => setSearch(e.target.value)}
             className="w-72 rounded-full border-purple-200 focus:ring-purple-500"
           />
-          
+
           <Select value={location} onValueChange={setLocation}>
             <SelectTrigger className="w-48 rounded-full">
               <SelectValue placeholder="Select Location" />
@@ -185,7 +182,7 @@ export default function FindHostel() {
               >
                 <div className="relative">
                   <img
-                    src={hostel.image}
+                    src={hostel.images[0]}
                     alt={hostel.name}
                     className="w-full h-48 object-cover"
                   />
@@ -199,10 +196,14 @@ export default function FindHostel() {
                   </h2>
                   <div className="flex items-center text-gray-600 mb-3">
                     <MapPin className="h-4 w-4 mr-1" />
-                    <span className="text-sm">{hostel.location} • {hostel.distance}</span>
+                    <span className="text-sm">
+                      {hostel.location} 
+                    </span>
                   </div>
                   <div className="flex items-center mb-4">
-                    <div className="flex mr-2">{renderStars(hostel.rating)}</div>
+                    <div className="flex mr-2">
+                      {renderStars(hostel.rating)}
+                    </div>
                     <span className="text-sm text-gray-600">
                       ({hostel.reviews} reviews)
                     </span>
@@ -218,9 +219,12 @@ export default function FindHostel() {
                       </div>
                     ))}
                   </div>
-                  <Button onClick={()=>{
-                    navigate(`/hostel/${hostel.id}`)
-                  }} className="w-full bg-purple-600 hover:bg-purple-700 transition-colors">
+                  <Button
+                    onClick={() => {
+                      navigate(`/hostel/${hostel.hostelId}`);
+                    }}
+                    className="w-full bg-purple-600 hover:bg-purple-700 transition-colors"
+                  >
                     View Details
                   </Button>
                 </CardContent>
@@ -234,8 +238,8 @@ export default function FindHostel() {
               <Button
                 onClick={() => {
                   setSearch("");
-                  setLocation("");
-                  setPrice("");
+                  setLocation("all");
+                  setPrice("none");
                 }}
                 variant="outline"
                 className="mt-4"
@@ -252,7 +256,7 @@ export default function FindHostel() {
             <PaginationContent>
               <PaginationItem>
                 <PaginationLink
-                  onClick={() => setPage(Math.max(1, page - 1))}
+                  onClick={goToPreviousPage}
                   disabled={page === 1}
                   className={page === 1 ? "opacity-50 cursor-not-allowed" : ""}
                 >
@@ -263,7 +267,7 @@ export default function FindHostel() {
                 <PaginationItem key={i}>
                   <PaginationLink
                     onClick={() => setPage(i + 1)}
-                    isActive={page === i + 1}
+                    className={i + 1 === page ? "bg-purple-500 text-white" : ""}
                   >
                     {i + 1}
                   </PaginationLink>
@@ -271,7 +275,7 @@ export default function FindHostel() {
               ))}
               <PaginationItem>
                 <PaginationLink
-                  onClick={() => setPage(Math.min(totalPages, page + 1))}
+                  onClick={goToNextPage}
                   disabled={page === totalPages}
                   className={page === totalPages ? "opacity-50 cursor-not-allowed" : ""}
                 >
@@ -282,7 +286,6 @@ export default function FindHostel() {
           </Pagination>
         )}
       </main>
-
       <Footer />
     </div>
   );
