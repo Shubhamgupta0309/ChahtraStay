@@ -1,11 +1,33 @@
 import { Router } from "express";
-import { loginUser, registerUser } from "../controllers/userController.js";
-const router = Router()
-router.get("/",(req,res)=>{
-    res.status(200).json({
-        message:"Welcome in user routes"
-    })
-})
-router.use("/signup",registerUser)
-router.use("/login",loginUser)
-export default router
+import {
+  loginUser,
+  registerUser,
+  deleteUser,
+  makeAdmin,
+  getAllUsers,
+  getUserById,
+  removeAdmin,
+} from "../controllers/userController.js";
+import { protect, adminOnly } from "../middlewares/authMiddleware.js";
+
+const router = Router();
+
+router.get("/", (req, res) => {
+  res.status(200).json({
+    message: "Welcome to user routes",
+  });
+});
+
+router.post("/signup", registerUser);
+router.post("/login", loginUser);
+
+router.get("/all", protect, adminOnly, getAllUsers);
+
+router.get("/:id", protect, getUserById);
+
+router.patch("/make-admin/:id", protect, adminOnly, makeAdmin);
+router.patch("/remove-admin/:id", protect, adminOnly, removeAdmin);
+
+router.delete("/:id", protect,adminOnly, deleteUser);
+
+export default router;
