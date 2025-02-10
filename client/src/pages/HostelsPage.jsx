@@ -39,14 +39,14 @@ export default function FindHostel() {
 
   useEffect(() => {
     const fetchData = async () => {
-      setIsLoading(true); 
+      setIsLoading(true);
       try {
         const res = await api.get("/api/hostel/");
         setHostels(res.data);
-        setIsLoading(false); 
+        setIsLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
-        setIsLoading(false); 
+        setIsLoading(false);
       }
     };
     fetchData();
@@ -54,7 +54,7 @@ export default function FindHostel() {
 
   useEffect(() => {
     if (hostels.length) {
-      setIsLoading(true); 
+      setIsLoading(true);
       const timer = setTimeout(() => {
         let filtered = hostels.filter((hostel) => {
           return (
@@ -66,10 +66,10 @@ export default function FindHostel() {
           );
         });
         setFilteredHostels(filtered);
-        setIsLoading(false); 
-      }, 300); 
+        setIsLoading(false);
+      }, 300);
 
-      return () => clearTimeout(timer); 
+      return () => clearTimeout(timer);
     }
   }, [search, location, price, hostels]);
 
@@ -128,6 +128,33 @@ export default function FindHostel() {
               <SelectItem value="all">All Locations</SelectItem>
               <SelectItem value="Mumbai">Mumbai</SelectItem>
               <SelectItem value="Delhi">Delhi</SelectItem>
+              <SelectItem value="Bangalore">Bangalore</SelectItem>
+              <SelectItem value="Hyderabad">Hyderabad</SelectItem>
+              <SelectItem value="Chennai">Chennai</SelectItem>
+              <SelectItem value="Kolkata">Kolkata</SelectItem>
+              <SelectItem value="Pune">Pune</SelectItem>
+              <SelectItem value="Ahmedabad">Ahmedabad</SelectItem>
+              <SelectItem value="Jaipur">Jaipur</SelectItem>
+              <SelectItem value="Kota">Kota</SelectItem>
+              <SelectItem value="Lucknow">Lucknow</SelectItem>
+              <SelectItem value="Kanpur">Kanpur</SelectItem>
+              <SelectItem value="Nagpur">Nagpur</SelectItem>
+              <SelectItem value="Indore">Indore</SelectItem>
+              <SelectItem value="Thane">Thane</SelectItem>
+              <SelectItem value="Bhopal">Bhopal</SelectItem>
+              <SelectItem value="Prayagraj">Prayagraj</SelectItem>
+              <SelectItem value="Patna">Patna</SelectItem>
+              <SelectItem value="Varanasi">Varanasi</SelectItem>
+              <SelectItem value="Surat">Surat</SelectItem>
+              <SelectItem value="Coimbatore">Coimbatore</SelectItem>
+              <SelectItem value="Guwahati">Guwahati</SelectItem>
+              <SelectItem value="Bhubaneswar">Bhubaneswar</SelectItem>
+              <SelectItem value="Dehradun">Dehradun</SelectItem>
+              <SelectItem value="Mysore">Mysore</SelectItem>
+              <SelectItem value="Chandigarh">Chandigarh</SelectItem>
+              <SelectItem value="Vijayawada">Vijayawada</SelectItem>
+              <SelectItem value="Ranchi">Ranchi</SelectItem>
+              <SelectItem value="Raipur">Raipur</SelectItem>
             </SelectContent>
           </Select>
 
@@ -196,9 +223,7 @@ export default function FindHostel() {
                   </h2>
                   <div className="flex items-center text-gray-600 mb-3">
                     <MapPin className="h-4 w-4 mr-1" />
-                    <span className="text-sm">
-                      {hostel.location} 
-                    </span>
+                    <span className="text-sm">{hostel.location}</span>
                   </div>
                   <div className="flex items-center mb-4">
                     <div className="flex mr-2">
@@ -277,7 +302,9 @@ export default function FindHostel() {
                 <PaginationLink
                   onClick={goToNextPage}
                   disabled={page === totalPages}
-                  className={page === totalPages ? "opacity-50 cursor-not-allowed" : ""}
+                  className={
+                    page === totalPages ? "opacity-50 cursor-not-allowed" : ""
+                  }
                 >
                   Next
                 </PaginationLink>
