@@ -28,15 +28,25 @@ import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import api from "@/api";
 import { toast } from "@/hooks/use-toast";
+import Loading from "./Loading";
+import { Toaster } from "@/components/ui/toaster";
 
 export default function HostelDetails() {
   const { id } = useParams();
   const [hostel, setHostel] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await api.get(`/api/hostel/${id}`);
-      setHostel(res.data);
+      try {
+        const res = await api.get(`/api/hostel/${id}`);
+        setHostel(res.data);
+      } catch (error) {
+        console.error("Error fetching hostel data:", error);
+        setHostel(null);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchData();
   }, [id]);
@@ -56,16 +66,19 @@ export default function HostelDetails() {
       }
     } else {
       navigator.clipboard.writeText(window.location.href);
-      toast({title: "Link copied to clipboard!"});
+      toast({ title: "Link copied to clipboard!" });
     }
   };
 
-  if (!hostel) {
+  if (!hostel && !loading) {
     return (
       <div className="flex items-center justify-center h-screen">
         <p className="text-xl text-gray-600">Hostel not found</p>
       </div>
     );
+  }
+  if (loading) {
+    return <Loading />;
   }
 
   return (
@@ -78,7 +91,7 @@ export default function HostelDetails() {
           <h1 className="text-3xl font-bold text-gray-800">{hostel.name}</h1>
           <Button
             variant="outline"
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 rounded-s-2xl bg-purple-200 hover:bg-purple-400 hover:text-white hover:rounded-e-2xl transition-all duration-700 ease-in-out hover:rounded-s-lg"
             onClick={handleShare}
           >
             <Share2 className="w-4 h-4" />
@@ -240,19 +253,20 @@ export default function HostelDetails() {
         <div className="flex gap-4 justify-center">
           <Button
             variant="outline"
-            className="flex items-center gap-2"
+            className="flex items-center gap-2  rounded-full"
             onClick={() => window.open(hostel.mapLink, "_blank")}
           >
             <MapPin className="w-4 h-4" />
             View on Google Maps
           </Button>
           <Button
-            onClick={() => navigate(`/hostel/${hostel.id}/book`)}
-            className="flex items-center gap-2"
+            onClick={() => navigate(`/hostel/${hostel.hostelId}/book`)}
+            className="flex items-center gap-2 bg-purple-600 hover:bg-purple-400 rounded-full"
           >
             <Calendar className="w-4 h-4" />
             Book Now
           </Button>
+          <Toaster/>
         </div>
       </div>
       <Footer />

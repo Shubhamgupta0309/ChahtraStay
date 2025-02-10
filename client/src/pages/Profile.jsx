@@ -5,13 +5,40 @@ import api from "@/api";
 import { Toaster } from "@/components/ui/toaster";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  ArrowRight,
+  LucideAppWindow,
+  Mail,
+  Phone,
+  User,
+  Calendar,
+  BadgeIndianRupee,
+  Clock,
+  BedDouble,
+  Building,
+} from "lucide-react";
 import Footer from "@/components/Footer";
+import Header from "@/components/Header";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function ProfilePage() {
   const [userData, setUserData] = useState("");
-  const [bookings, setBookings] = useState([]); // Initialize bookings as an empty array
+  const [bookings, setBookings] = useState([]);
+  const [statusFilter, setStatusFilter] = useState("all");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,7 +48,7 @@ export default function ProfilePage() {
         setUserData(userRes.data.userData);
 
         const bookingRes = await api.get("/api/booking/my-bookings");
-        setBookings(bookingRes.data.bookings || []); // Ensure bookings is an array, even if empty
+        setBookings(bookingRes.data || []);
       } catch (error) {
         console.error("Error fetching user profile or bookings:", error);
       }
@@ -29,18 +56,26 @@ export default function ProfilePage() {
     fetchUserData();
   }, []);
 
-  if (!userData) {
-    return (
-      <div>
-        <Loading />
-      </div>
-    );
-  }
+  const filteredBookings = bookings.filter(
+    (booking) => statusFilter === "all" || booking.status === statusFilter
+  );
+
+  const getStatusColor = (status) => {
+    const colors = {
+      pending: "bg-yellow-100 text-yellow-800",
+      confirmed: "bg-green-100 text-green-800",
+      cancelled: "bg-red-100 text-red-800",
+      completed: "bg-blue-100 text-blue-800",
+    };
+    return colors[status] || "bg-gray-100 text-gray-800";
+  };
+
+  if (!userData) return <Loading />;
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       <Toaster />
-      {/* Profile Header */}
+      {/* Keep existing profile header and info sections */}
       <section className="bg-gradient-to-r from-purple-600 to-purple-800 text-white py-12 md:py-20">
         <div className="container mx-auto px-6 flex flex-col items-center">
           <h1 className="text-3xl md:text-4xl font-bold text-center">
@@ -48,10 +83,7 @@ export default function ProfilePage() {
           </h1>
           <div className="mt-6">
             <Avatar className="w-32 h-32 mx-auto">
-              <AvatarImage
-                src={userData.profileImage || "/icon.png"} // Default avatar if no image
-                alt={userData.name}
-              />
+              <AvatarImage src={userData.profileImage || "/icon.png"} alt={userData.name} />
               <AvatarFallback className="bg-purple-100 text-purple-600">
                 {userData.name[0]}
               </AvatarFallback>
@@ -70,31 +102,30 @@ export default function ProfilePage() {
                     <h3 className="text-xl font-semibold text-gray-900">
                       Personal Information
                     </h3>
-                    <div className="mt-4 text-gray-700">
-                      <p className="font-semibold">Email:</p>
+                    <div className="mt-4 text-gray-700 flex flex-row space-x-2">
+                      <p className="font-semibold flex flex-row">
+                        <Mail className="mx-2 w-4 text-purple-800" /> Email:
+                      </p>
                       <p>{userData.email}</p>
                     </div>
-                    <div className="mt-4 text-gray-700">
-                      <p className="font-semibold">Phone:</p>
+                    <div className="mt-4 text-gray-700 flex flex-row space-x-2">
+                      <p className="font-semibold flex flex-row">
+                        <Phone className="mx-2 w-4 text-purple-800" /> Phone:
+                      </p>
                       <p>{userData.phone}</p>
                     </div>
-                    <div className="mt-4 text-gray-700">
-                      <p className="font-semibold">Role:</p>
+                    <div className="mt-4 text-gray-700 flex flex-row space-x-2">
+                      <p className="font-semibold flex flex-row">
+                        <User className="mx-2 w-4 text-purple-800" /> Role:
+                      </p>
                       <p>{userData.role}</p>
                     </div>
-                    <div className="mt-4 text-gray-700">
-                      <p className="font-semibold">Joined:</p>
+                    <div className="mt-4 text-gray-700 flex flex-row space-x-2">
+                      <p className="font-semibold flex flex-row">
+                        <LucideAppWindow className="mx-2 w-4 text-purple-800" /> Joined:
+                      </p>
                       <p>{new Date(userData.createdAt).toLocaleDateString()}</p>
                     </div>
-                  </div>
-                  <div className="flex flex-col items-center md:w-1/3 mt-8 md:mt-0">
-                    <Button
-                      onClick={() => navigate(`/hostel`)}
-                      className="w-full bg-purple-600 text-white hover:bg-purple-700 rounded-lg px-6 py-3 transition-all duration-300"
-                    >
-                      Manage Hostels
-                      <ArrowRight className="ml-2 h-5 w-5" />
-                    </Button>
                   </div>
                 </div>
               </div>
@@ -103,53 +134,64 @@ export default function ProfilePage() {
         </div>
       </section>
 
-      {/* Bookings Section */}
+      {/* Enhanced Bookings Section */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-6 md:px-12">
-          <h3 className="text-xl font-semibold text-gray-900 mb-6">
-            My Bookings
-          </h3>
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-xl font-semibold text-gray-900">My Bookings</h3>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Filter by status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Bookings</SelectItem>
+                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="confirmed">Confirmed</SelectItem>
+                <SelectItem value="cancelled">Cancelled</SelectItem>
+                <SelectItem value="completed">Completed</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           {bookings.length === 0 ? (
-            <p className="text-gray-700">No bookings found.</p>
+            <Card className="p-6">
+              <p className="text-gray-700 text-center">No bookings found.</p>
+            </Card>
           ) : (
-            <div className="space-y-4">
-              {bookings.map((booking) => (
-                <Card
-                  key={booking.transactionId}
-                  className="shadow-lg rounded-lg overflow-hidden"
-                >
-                  <CardContent>
-                    <div className="flex flex-col md:flex-row md:space-x-8">
-                      <div className="flex-1">
-                        <h4 className="text-lg font-semibold text-gray-900">
-                          {booking.hostelId}
-                        </h4>
-                        <p className="text-gray-700">
-                          Room: {booking.roomSelection}
-                        </p>
-                        <p className="text-gray-700">
-                          Check-in:{" "}
-                          {new Date(booking.checkInDate).toLocaleDateString()}
-                        </p>
-                        <p className="text-gray-700">
-                          Check-out:{" "}
-                          {new Date(booking.checkOutDate).toLocaleDateString()}
-                        </p>
-                        <p className="text-gray-700">
-                          Amount: ${booking.amount}
-                        </p>
-                        <p className="text-gray-700">
-                          Status:{" "}
-                          <span className="font-semibold">
-                            {booking.status}
-                          </span>
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+            <Card>
+              <Table>
+                <TableHeader>
+                  <TableRow >
+                    <TableHead  className="text-purple-500 hover:text-purple-900"><Building className="w-4 h-4 inline mr-2 " />Hostel</TableHead>
+                    <TableHead className="text-purple-500 hover:text-purple-900"><BedDouble className="w-4 h-4 inline mr-2" />Room</TableHead>
+                    <TableHead className="text-purple-500 hover:text-purple-900"><Calendar className="w-4 h-4 inline mr-2" />Check-in</TableHead>
+                    <TableHead className="text-purple-500 hover:text-purple-900"><Calendar className="w-4 h-4 inline mr-2" />Check-out</TableHead>
+                    <TableHead className="text-purple-500 hover:text-purple-900"><BadgeIndianRupee className="w-4 h-4 inline mr-2" />Amount</TableHead>
+                    <TableHead className="text-purple-500 hover:text-purple-900"><Clock className="w-4 h-4 inline mr-2" />Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredBookings.map((booking) => (
+                    <TableRow key={booking.transactionId}>
+                      <TableCell className="font-medium">{booking.hostelId}</TableCell>
+                      <TableCell>{booking.roomSelection}</TableCell>
+                      <TableCell>
+                        {new Date(booking.checkInDate).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell>
+                        {new Date(booking.checkOutDate).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell>₹{booking.amount}</TableCell>
+                      <TableCell>
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(booking.status)}`}>
+                          {booking.status}
+                        </span>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Card>
           )}
         </div>
       </section>
