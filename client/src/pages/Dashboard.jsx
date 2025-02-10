@@ -49,6 +49,7 @@ const AdminDashboard = () => {
   });
 
   const [selectedFiles, setSelectedFiles] = useState([]);
+  const [previewUrls, setPreviewUrls] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -108,13 +109,22 @@ const AdminDashboard = () => {
 
   const handleFileChange = (e) => {
     if (e.target.files) {
-      setSelectedFiles(Array.from(e.target.files));
+      const files = Array.from(e.target.files);
+      setSelectedFiles(files);
+
+      const urls = files.map((file) => URL.createObjectURL(file));
+      setPreviewUrls(urls);
     }
   };
+  useEffect(() => {
+    return () => {
+      previewUrls.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [previewUrls]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (
       !formData.name.trim() ||
       !formData.location.trim() ||
@@ -129,7 +139,7 @@ const AdminDashboard = () => {
       });
       return;
     }
-  
+
     if (isNaN(formData.price) || Number(formData.price) <= 0) {
       toast({
         variant: "destructive",
@@ -138,10 +148,12 @@ const AdminDashboard = () => {
       });
       return;
     }
-  
+
     if (
       formData.mapLink &&
-      !/^(https?:\/\/)?(www\.)?[\w-]+(\.[\w-]+)+[/#?]?.*$/.test(formData.mapLink)
+      !/^(https?:\/\/)?(www\.)?[\w-]+(\.[\w-]+)+[/#?]?.*$/.test(
+        formData.mapLink
+      )
     ) {
       toast({
         variant: "destructive",
@@ -150,39 +162,39 @@ const AdminDashboard = () => {
       });
       return;
     }
-  
+
     setFormLoading(true);
-  
+
     const data = new FormData();
-  
+
     Object.keys(formData).forEach((key) => {
       if (key === "amenities" || key === "rules") {
         const array = formData[key]
           .split(",")
           .map((item) => item.trim())
-          .filter((item) => item); 
+          .filter((item) => item);
         array.forEach((item) => data.append(key, item));
       } else {
         data.append(key, formData[key]);
       }
     });
-  
+
     selectedFiles.forEach((file) => {
       data.append("images", file);
     });
-  
+
     try {
       const response = await api.post("/api/hostel/", data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-  
+
       toast({
         title: "Success!",
         description: "Hostel added successfully.",
       });
-  
+
       setHostels((prev) => [...prev, response.data]);
-  
+
       setFormData({
         name: "",
         location: "",
@@ -204,7 +216,6 @@ const AdminDashboard = () => {
       setFormLoading(false);
     }
   };
-  
 
   if (loading) {
     return (
@@ -494,226 +505,262 @@ const AdminDashboard = () => {
         <SearchCard hostels={hostels} />
       </section>
       <section className="flex flex-row">
-      <Card className="w-full max-w-3xl mx-auto p-6 shadow-lg rounded-xl bg-white dark:bg-gray-900">
-  <CardHeader className="border-b pb-4">
-    <CardTitle className="text-3xl font-semibold text-gray-900 dark:text-white">
-      Add Hostel
-    </CardTitle>
-  </CardHeader>
-  <CardContent className="space-y-6">
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-6">
-          <div>
-            <label
-              htmlFor="name"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Hostel Name*
-            </label>
-            <Input
-              id="name"
-              name="name"
-              placeholder="Enter hostel name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              className="w-full mt-1 rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="location"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Location*
-            </label>
-            <Input
-              id="location"
-              name="location"
-              placeholder="Enter hostel location"
-              value={formData.location}
-              onChange={handleChange}
-              required
-              className="w-full mt-1 rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="price"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Price per Month (₹)*
-            </label>
-            <Input
-              id="price"
-              name="price"
-              type="number"
-              placeholder="Enter price"
-              value={formData.price}
-              onChange={handleChange}
-              required
-              min="0"
-              className="w-full mt-1 rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="hostelType"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Hostel Type*
-            </label>
-            <Select
-              value={formData.hostelType}
-              onValueChange={handleSelectChange}
-            >
-              <SelectTrigger className="w-full mt-1 rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
-                <SelectValue placeholder="Select hostel type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="boys">Boys Hostel</SelectItem>
-                <SelectItem value="girls">Girls Hostel</SelectItem>
-                <SelectItem value="co-ed">Co-ed Hostel</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-        <div className="space-y-6">
-          <div>
-            <label
-              htmlFor="amenities"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Amenities (comma-separated)
-            </label>
-            <Textarea
-              id="amenities"
-              name="amenities"
-              placeholder="WiFi, AC, Laundry, etc."
-              value={formData.amenities}
-              onChange={handleChange}
-              className="w-full mt-1 h-24 rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="food"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Food (comma-separated)
-            </label>
-            <Textarea
-              id="food"
-              name="food"
-              placeholder="Veg, Non-veg, Mess available or not"
-              value={formData.food}
-              onChange={handleChange}
-              className="w-full mt-1 h-24 rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="rules"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Rules (comma-separated)
-            </label>
-            <Textarea
-              id="rules"
-              name="rules"
-              placeholder="No smoking, No loud music after 10 PM, etc."
-              value={formData.rules}
-              onChange={handleChange}
-              className="w-full mt-1 h-24 rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="mapLink"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Google Maps Link
-            </label>
-            <Input
-              id="mapLink"
-              name="mapLink"
-              placeholder="Enter Google Maps link"
-              value={formData.mapLink}
-              onChange={handleChange}
-              className="w-full mt-1 rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-            />
-          </div>
-        </div>
-      </div>
-      <div className="mt-6">
-        <label
-          htmlFor="images"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-        >
-          Hostel Images*
-        </label>
-        <div className="mt-1 flex justify-center p-6 border-2 border-dashed border-gray-300 rounded-lg dark:border-gray-700">
-          <div className="space-y-2 text-center">
-            <svg
-              className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500"
-              stroke="currentColor"
-              fill="none"
-              viewBox="0 0 48 48"
-              aria-hidden="true"
-            >
-              <path
-                d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                strokeWidth={2}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            <div className="text-sm text-gray-600 dark:text-gray-400">
-              <label
-                htmlFor="images"
-                className="cursor-pointer text-primary hover:text-primary/90"
-              >
-                <span>Upload images</span>
-                <input
-                  id="images"
-                  name="images"
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  className="sr-only"
-                  required
-                />
-              </label>
-              <p className="pl-1">or drag and drop</p>
-            </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              PNG, JPG, GIF up to 10MB
-            </p>
-          </div>
-        </div>
-      </div>
-      <div className="mt-6">
-        <Button
-          type="submit"
-          className="w-full rounded-lg bg-primary text-white py-3 hover:bg-primary/90"
-          disabled={formLoading}
-        >
-          {formLoading ? (
-            <div className="flex items-center justify-center">
-              <div className="w-5 h-5 border-t-2 border-b-2 border-white rounded-full animate-spin mr-2" />
-              Adding Hostel...
-            </div>
-          ) : (
-            "Add Hostel"
-          )}
-        </Button>
-      </div>
-    </form>
-  </CardContent>
-</Card>
+        <Card className="w-full max-w-3xl mx-auto p-6 shadow-lg rounded-xl bg-white dark:bg-gray-900">
+          <CardHeader className="border-b pb-4">
+            <CardTitle className="text-3xl font-semibold text-gray-900 dark:text-white">
+              Add Hostel
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-6">
+                  <div>
+                    <label
+                      htmlFor="name"
+                      className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      Hostel Name*
+                    </label>
+                    <Input
+                      id="name"
+                      name="name"
+                      placeholder="Enter hostel name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      required
+                      className="w-full mt-1 rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="location"
+                      className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      Location*
+                    </label>
+                    <Input
+                      id="location"
+                      name="location"
+                      placeholder="Enter hostel location"
+                      value={formData.location}
+                      onChange={handleChange}
+                      required
+                      className="w-full mt-1 rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="price"
+                      className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      Price per Month (₹)*
+                    </label>
+                    <Input
+                      id="price"
+                      name="price"
+                      type="number"
+                      placeholder="Enter price"
+                      value={formData.price}
+                      onChange={handleChange}
+                      required
+                      min="0"
+                      className="w-full mt-1 rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="hostelType"
+                      className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      Hostel Type*
+                    </label>
+                    <Select
+                      value={formData.hostelType}
+                      onValueChange={handleSelectChange}
+                    >
+                      <SelectTrigger className="w-full mt-1 rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                        <SelectValue placeholder="Select hostel type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="boys">Boys Hostel</SelectItem>
+                        <SelectItem value="girls">Girls Hostel</SelectItem>
+                        <SelectItem value="co-ed">Co-ed Hostel</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="space-y-6">
+                  <div>
+                    <label
+                      htmlFor="amenities"
+                      className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      Amenities (comma-separated)
+                    </label>
+                    <Textarea
+                      id="amenities"
+                      name="amenities"
+                      placeholder="WiFi, AC, Laundry, etc."
+                      value={formData.amenities}
+                      onChange={handleChange}
+                      className="w-full mt-1 h-24 rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="food"
+                      className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      Food (comma-separated)
+                    </label>
+                    <Textarea
+                      id="food"
+                      name="food"
+                      placeholder="Veg, Non-veg, Mess available or not"
+                      value={formData.food}
+                      onChange={handleChange}
+                      className="w-full mt-1 h-24 rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="rules"
+                      className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      Rules (comma-separated)
+                    </label>
+                    <Textarea
+                      id="rules"
+                      name="rules"
+                      placeholder="No smoking, No loud music after 10 PM, etc."
+                      value={formData.rules}
+                      onChange={handleChange}
+                      className="w-full mt-1 h-24 rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="mapLink"
+                      className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      Google Maps Link
+                    </label>
+                    <Input
+                      id="mapLink"
+                      name="mapLink"
+                      placeholder="Enter Google Maps link"
+                      value={formData.mapLink}
+                      onChange={handleChange}
+                      className="w-full mt-1 rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="mt-6">
+                <label
+                  htmlFor="images"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
+                  Hostel Images*
+                </label>
+                <div className="mt-1 flex flex-col space-y-4">
+                  <div className="flex justify-center p-6 border-2 border-dashed border-gray-300 rounded-lg dark:border-gray-700">
+                    <div className="space-y-2 text-center">
+                      <svg
+                        className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500"
+                        stroke="currentColor"
+                        fill="none"
+                        viewBox="0 0 48 48"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                          strokeWidth={2}
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">
+                        <label
+                          htmlFor="images"
+                          className="cursor-pointer text-primary hover:text-primary/90"
+                        >
+                          <span>Upload images</span>
+                          <input
+                            id="images"
+                            name="images"
+                            type="file"
+                            multiple
+                            accept="image/*"
+                            onChange={handleFileChange}
+                            className="sr-only"
+                            required
+                          />
+                        </label>
+                        <p className="pl-1">or drag and drop</p>
+                      </div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        PNG, JPG, GIF up to 5MB
+                      </p>
+                    </div>
+                  </div>
 
+                  {selectedFiles.length > 0 && (
+                    <div className="space-y-2">
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        Selected files ({selectedFiles.length}):
+                      </p>
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        {previewUrls.map((url, index) => (
+                          <div key={index} className="relative group">
+                            <img
+                              src={url}
+                              alt={`Preview ${index + 1}`}
+                              className="h-24 w-full object-cover rounded-lg"
+                            />
+                            <button
+                              type="button"
+                              className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                              onClick={() => {
+                                const newFiles = selectedFiles.filter(
+                                  (_, i) => i !== index
+                                );
+                                const newUrls = previewUrls.filter(
+                                  (_, i) => i !== index
+                                );
+                                setSelectedFiles(newFiles);
+                                setPreviewUrls(newUrls);
+                              }}
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="mt-6">
+                <Button
+                  type="submit"
+                  className="w-full rounded-lg bg-primary text-white py-3 hover:bg-primary/90"
+                  disabled={formLoading}
+                >
+                  {formLoading ? (
+                    <div className="flex items-center justify-center">
+                      <div className="w-5 h-5 border-t-2 border-b-2 border-white rounded-full animate-spin mr-2" />
+                      Adding Hostel...
+                    </div>
+                  ) : (
+                    "Add Hostel"
+                  )}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
       </section>
     </div>
   );
