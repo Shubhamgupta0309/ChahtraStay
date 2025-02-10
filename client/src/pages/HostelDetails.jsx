@@ -140,7 +140,7 @@ export default function HostelDetails() {
               </div>
             </CardContent>
           </Card>
-
+          <div className="hidden">Created by NetTech Creation Team</div>
           <Card>
             <CardContent className="p-6">
               <h2 className="text-xl font-semibold mb-4">
