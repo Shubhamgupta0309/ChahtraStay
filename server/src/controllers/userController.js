@@ -159,5 +159,46 @@ export const getProfile = async (req, res) => {
       message: "Fetched Profile",
       userData,
     });
-  } catch (error) {}
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const updateUser = async (req, res) => {
+  const { email, name, phone, password } = req.body;
+  try {
+    const user = req?.user;
+    if (!user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const userData = await User.findById(user._id);
+    if (!userData) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (email) {
+      const emailUsed = await User.findOne({
+        email: email.toLowerCase(),
+        _id: { $ne: user._id },
+      });
+      if (emailUsed) {
+        return res
+          .status(409)
+          .json({ message: "An account already exists with this email" });
+      }
+      userData.email = email.toLowerCase().trim();
+    }
+
+    if (phone) userData.phone = phone.trim();
+    if (name) userData.name = name.trim();
+    if (password) userData.password = password;
+
+    await userData.save();
+
+    return res.status(200).json({ message: "User data updated successfully" });
+  } catch (error) {
+    console.error("Update user error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
