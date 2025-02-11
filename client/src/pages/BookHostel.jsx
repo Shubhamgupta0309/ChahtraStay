@@ -165,7 +165,6 @@ export default function HostelBooking() {
           <div className="grid md:grid-cols-3 gap-6">
             <div className="md:col-span-2">
               <form onSubmit={handleSubmit}>
-                {/* Stay Duration Card */}
                 <Card className="mb-6">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -216,7 +215,6 @@ export default function HostelBooking() {
                   </CardContent>
                 </Card>
 
-                {/* Room Selection Card */}
                 <Card className="mb-6">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -256,7 +254,6 @@ export default function HostelBooking() {
                   </CardContent>
                 </Card>
 
-                {/* Personal Details Card */}
                 <Card className="mb-6">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -380,7 +377,6 @@ export default function HostelBooking() {
               </form>
             </div>
 
-            {/* Booking Summary Card */}
             <div className="md:col-span-1">
               <Card className="sticky top-24">
                 <CardHeader>

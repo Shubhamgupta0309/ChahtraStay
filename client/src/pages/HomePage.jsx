@@ -114,7 +114,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Features Section */}
       <section className="py-20 w-full bg-white">
         <div className="container mx-auto px-4">
           <h2 className="text-4xl md:text-5xl font-bold text-center text-gray-900 mb-16">
@@ -158,7 +157,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Top Hostels Section */}
       <section className="py-20 w-full bg-purple-50">
         <div className="container mx-auto px-4">
           <h2 className="text-4xl font-bold text-center mb-12 text-gray-900">
@@ -200,7 +198,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Testimonials Section */}
       <section className="py-20 w-full bg-white">
         <div className="container mx-auto px-4">
           <h2 className="text-4xl font-bold text-center mb-12 text-gray-900">

@@ -274,8 +274,6 @@ export default function FindHostel() {
             </div>
           )}
         </div>
-
-        {/* Pagination */}
         {filteredHostels.length > itemsPerPage && (
           <Pagination className="mt-12">
             <PaginationContent>
