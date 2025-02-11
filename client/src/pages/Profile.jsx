@@ -24,6 +24,7 @@ import {
   Clock,
   BedDouble,
   Building,
+  Edit,
 } from "lucide-react";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
@@ -34,13 +35,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { toast } from "@/hooks/use-toast";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
 export default function ProfilePage() {
-  const [userData, setUserData] = useState("");
+  const [userData, setUserData] = useState({});
   const [bookings, setBookings] = useState([]);
   const [statusFilter, setStatusFilter] = useState("all");
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
+  });
   const navigate = useNavigate();
-
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -69,13 +84,35 @@ export default function ProfilePage() {
     };
     return colors[status] || "bg-gray-100 text-gray-800";
   };
+  const handleProfileUpdate = async () => {
+    try {
+      const res = await api.patch("/api/user/update", formData);
+      toast({
+        title: "Profile updated",
+      });
+      const userRes = await api.get("/api/user/profile");
+      setUserData(userRes.data.userData);
+    } catch (error) {
+      toast({
+        title: error.message || "Failed to update ",
+        description: "Please! retry to update profile",
+        variant: "destructive",
+      });
+    }
+  };
+  const handleValueChange = (e) => {
+    const { id, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [id]: value,
+    }));
+  };
 
   if (!userData) return <Loading />;
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       <Toaster />
-      {/* Keep existing profile header and info sections */}
       <section className="bg-gradient-to-r from-purple-600 to-purple-800 text-white py-12 md:py-20">
         <div className="container mx-auto px-6 flex flex-col items-center">
           <h1 className="text-3xl md:text-4xl font-bold text-center">
@@ -83,9 +120,12 @@ export default function ProfilePage() {
           </h1>
           <div className="mt-6">
             <Avatar className="w-32 h-32 mx-auto">
-              <AvatarImage src={userData.profileImage || "/icon.png"} alt={userData.name} />
+              <AvatarImage
+                src={userData.profileImage || "/icon.png"}
+                alt={userData?.name || "U"}
+              />
               <AvatarFallback className="bg-purple-100 text-purple-600">
-                {userData.name[0]}
+                 U
               </AvatarFallback>
             </Avatar>
           </div>
@@ -99,9 +139,75 @@ export default function ProfilePage() {
               <div className="space-y-6">
                 <div className="flex flex-col md:flex-row items-start md:space-x-8">
                   <div className="flex-1">
-                    <h3 className="text-xl font-semibold text-gray-900">
-                      Personal Information
-                    </h3>
+                    <div className="flex flow-row justify-between p-2 ">
+                      <h3 className="text-xl font-semibold text-gray-900">
+                        Personal Information
+                      </h3>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button className="rounded-full hover:bg-purple-800 shadow-xl active:scale-90 hover:text-white transition-all divide-purple-600 ease-in hover:cursor-pointer">
+                            <Edit /> Update Profile
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-100">
+                          <div className="grid gap-4">
+                            <div className="space-y-2">
+                              <h4 className="font-medium leading-none">
+                                Update Profile
+                              </h4>
+                              <p className="text-sm text-muted-foreground">
+                                Enter the details which you want to update only
+                              </p>
+                            </div>
+                            <div className="grid gap-2">
+                              <div className="grid grid-cols-3 items-center gap-4">
+                                <Label htmlFor="name">Name</Label>
+                                <Input
+                                  id="name"
+                                  defaultValue={userData?.name}
+                                  className="col-span-2 h-8"
+                                  onChange={handleValueChange}
+                                />
+                              </div>
+                              <div className="grid grid-cols-3 items-center gap-4">
+                                <Label htmlFor="email">E-mail</Label>
+                                <Input
+                                  id="email"
+                                  defaultValue={userData?.email}
+                                  className="col-span-2 h-8"
+                                  onChange={handleValueChange}
+                                />
+                              </div>
+                              <div className="grid grid-cols-3 items-center gap-4">
+                                <Label htmlFor="phone">Phone</Label>
+                                <Input
+                                  id="phone"
+                                  defaultValue={userData?.phone}
+                                  className="col-span-2 h-8"
+                                  onChange={handleValueChange}
+                                />
+                              </div>
+                              <div className="grid grid-cols-3 items-center gap-4">
+                                <Label htmlFor="password">Password</Label>
+                                <Input
+                                  id="password"
+                                  defaultValue="*******"
+                                  type="password"
+                                  className="col-span-2 h-8"
+                                  onChange={handleValueChange}
+                                />
+                              </div>
+                              <Button
+                                onClick={handleProfileUpdate}
+                                className="rounded-full p-2 m-2 w-1/2 mx-auto bg-purple-500 hover:bg-purple-900"
+                              >
+                                Update
+                              </Button>
+                            </div>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    </div>
                     <div className="mt-4 text-gray-700 flex flex-row space-x-2">
                       <p className="font-semibold flex flex-row">
                         <Mail className="mx-2 w-4 text-purple-800" /> Email:
@@ -122,7 +228,8 @@ export default function ProfilePage() {
                     </div>
                     <div className="mt-4 text-gray-700 flex flex-row space-x-2">
                       <p className="font-semibold flex flex-row">
-                        <LucideAppWindow className="mx-2 w-4 text-purple-800" /> Joined:
+                        <LucideAppWindow className="mx-2 w-4 text-purple-800" />{" "}
+                        Joined:
                       </p>
                       <p>{new Date(userData.createdAt).toLocaleDateString()}</p>
                     </div>
@@ -134,7 +241,6 @@ export default function ProfilePage() {
         </div>
       </section>
 
-      {/* Enhanced Bookings Section */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-6 md:px-12">
           <div className="flex justify-between items-center mb-6">
@@ -161,19 +267,39 @@ export default function ProfilePage() {
             <Card>
               <Table>
                 <TableHeader>
-                  <TableRow >
-                    <TableHead  className="text-purple-500 hover:text-purple-900"><Building className="w-4 h-4 inline mr-2 " />Hostel</TableHead>
-                    <TableHead className="text-purple-500 hover:text-purple-900"><BedDouble className="w-4 h-4 inline mr-2" />Room</TableHead>
-                    <TableHead className="text-purple-500 hover:text-purple-900"><Calendar className="w-4 h-4 inline mr-2" />Check-in</TableHead>
-                    <TableHead className="text-purple-500 hover:text-purple-900"><Calendar className="w-4 h-4 inline mr-2" />Check-out</TableHead>
-                    <TableHead className="text-purple-500 hover:text-purple-900"><BadgeIndianRupee className="w-4 h-4 inline mr-2" />Amount</TableHead>
-                    <TableHead className="text-purple-500 hover:text-purple-900"><Clock className="w-4 h-4 inline mr-2" />Status</TableHead>
+                  <TableRow>
+                    <TableHead className="text-purple-500 hover:text-purple-900">
+                      <Building className="w-4 h-4 inline mr-2 " />
+                      Hostel
+                    </TableHead>
+                    <TableHead className="text-purple-500 hover:text-purple-900">
+                      <BedDouble className="w-4 h-4 inline mr-2" />
+                      Room
+                    </TableHead>
+                    <TableHead className="text-purple-500 hover:text-purple-900">
+                      <Calendar className="w-4 h-4 inline mr-2" />
+                      Check-in
+                    </TableHead>
+                    <TableHead className="text-purple-500 hover:text-purple-900">
+                      <Calendar className="w-4 h-4 inline mr-2" />
+                      Check-out
+                    </TableHead>
+                    <TableHead className="text-purple-500 hover:text-purple-900">
+                      <BadgeIndianRupee className="w-4 h-4 inline mr-2" />
+                      Amount
+                    </TableHead>
+                    <TableHead className="text-purple-500 hover:text-purple-900">
+                      <Clock className="w-4 h-4 inline mr-2" />
+                      Status
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredBookings.map((booking) => (
                     <TableRow key={booking.transactionId}>
-                      <TableCell className="font-medium">{booking.hostelId}</TableCell>
+                      <TableCell className="font-medium">
+                        {booking.hostelId}
+                      </TableCell>
                       <TableCell>{booking.roomSelection}</TableCell>
                       <TableCell>
                         {new Date(booking.checkInDate).toLocaleDateString()}
@@ -183,7 +309,11 @@ export default function ProfilePage() {
                       </TableCell>
                       <TableCell>₹{booking.amount}</TableCell>
                       <TableCell>
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(booking.status)}`}>
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                            booking.status
+                          )}`}
+                        >
                           {booking.status}
                         </span>
                       </TableCell>
