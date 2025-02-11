@@ -54,13 +54,20 @@ export default function ProfilePage() {
     email: "",
     phone: "",
     password: "",
+    isPasswordChanged: false,
   });
   const navigate = useNavigate();
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const userRes = await api.get("/api/user/profile");
-        setUserData(userRes.data.userData);
+        setFormData({
+          name: userRes.data.userData.name || "",
+          email: userRes.data.userData.email || "",
+          phone: userRes.data.userData.phone || "",
+          password: "*******",
+          isPasswordChanged: false,
+        });
 
         const bookingRes = await api.get("/api/booking/my-bookings");
         setBookings(bookingRes.data || []);
@@ -86,16 +93,36 @@ export default function ProfilePage() {
   };
   const handleProfileUpdate = async () => {
     try {
-      const res = await api.patch("/api/user/update", formData);
-      toast({
-        title: "Profile updated",
-      });
-      const userRes = await api.get("/api/user/profile");
-      setUserData(userRes.data.userData);
+      const updatedFields = Object.fromEntries(
+        Object.entries(formData).filter(
+          ([key, value]) =>
+            key !== "isPasswordChanged" && value !== "" && value !== "*******"
+        )
+      );
+
+      if (!formData.isPasswordChanged) {
+        delete updatedFields.password;
+      }
+
+      if (Object.keys(updatedFields).length > 0) {
+        const res = await api.patch("/api/user/update", updatedFields);
+        toast({
+          title: "Profile updated successfully",
+        });
+
+        const userRes = await api.get("/api/user/profile");
+        setUserData(userRes.data.userData);
+
+        setFormData((prev) => ({
+          ...prev,
+          password: "*******",
+          isPasswordChanged: false,
+        }));
+      }
     } catch (error) {
       toast({
-        title: error.message || "Failed to update ",
-        description: "Please! retry to update profile",
+        title: error.message || "Failed to update",
+        description: "Please retry to update profile",
         variant: "destructive",
       });
     }
@@ -105,6 +132,9 @@ export default function ProfilePage() {
     setFormData((prevData) => ({
       ...prevData,
       [id]: value,
+      ...(id === "password" && value !== "*******"
+        ? { isPasswordChanged: true }
+        : {}),
     }));
   };
 
@@ -125,7 +155,7 @@ export default function ProfilePage() {
                 alt={userData?.name || "U"}
               />
               <AvatarFallback className="bg-purple-100 text-purple-600">
-                 U
+                U
               </AvatarFallback>
             </Avatar>
           </div>
@@ -191,10 +221,11 @@ export default function ProfilePage() {
                                 <Label htmlFor="password">Password</Label>
                                 <Input
                                   id="password"
-                                  defaultValue="*******"
+                                  value={formData.password}
                                   type="password"
                                   className="col-span-2 h-8"
                                   onChange={handleValueChange}
+                                  placeholder="Enter new password"
                                 />
                               </div>
                               <Button
