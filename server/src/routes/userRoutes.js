@@ -9,6 +9,7 @@ import {
   removeAdmin,
   getProfile,
   searchUser,
+  updateUser,
 } from "../controllers/userController.js";
 import { protect, adminOnly } from "../middlewares/authMiddleware.js";
 
@@ -31,6 +32,7 @@ router.get("/:id", protect, getUserById);
 
 router.patch("/make-admin/:id", protect, adminOnly, makeAdmin);
 router.patch("/remove-admin/:id", protect, adminOnly, removeAdmin);
+router.patch("/update", protect, updateUser);
 
 router.delete("/:id", protect,adminOnly, deleteUser);
 
