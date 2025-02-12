@@ -1,7 +1,7 @@
 import Hostel from "../model/HostelModel.js";
 
 export const createHostel = async (req, res) => {
-  const { name, location, price, amenities, hostelType, rules, food, mapLink } = req.body;
+  const { name, location, price, amenities, hostelType, rules, food, mapLink, colleges } = req.body;
 
   if (!name || !location || !price || !hostelType || !mapLink) {
     return res.status(400).json({ message: "Details missing" });
@@ -49,6 +49,7 @@ export const createHostel = async (req, res) => {
       images: imageUrls,
       mapLink,
       owner: req.user._id,
+      colleges:colleges
     });
 
     await newHostel.save();
