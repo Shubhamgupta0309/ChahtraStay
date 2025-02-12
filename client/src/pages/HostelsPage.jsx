@@ -32,6 +32,7 @@ export default function FindHostel() {
   const [filteredHostels, setFilteredHostels] = useState([]);
   const [search, setSearch] = useState("");
   const [location, setLocation] = useState("all");
+  const [college, setCollege] = useState("all");
   const [price, setPrice] = useState("none");
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
@@ -62,7 +63,7 @@ export default function FindHostel() {
               hostel.name.toLowerCase().includes(search.toLowerCase()) ||
               hostel.location.toLowerCase().includes(search.toLowerCase())) &&
             (location === "all" || hostel.location.includes(location)) &&
-            (price === "none" || hostel.price <= parseInt(price))
+            (price === "none" || hostel.price <= parseInt(price)) && (college === "all" || hostel.colleges.includes(college))
           );
         });
         setFilteredHostels(filtered);
@@ -71,7 +72,7 @@ export default function FindHostel() {
 
       return () => clearTimeout(timer);
     }
-  }, [search, location, price, hostels]);
+  }, [search, location, price, college, hostels]);
 
   const itemsPerPage = 6;
   const totalPages = Math.ceil(filteredHostels.length / itemsPerPage);
@@ -99,7 +100,7 @@ export default function FindHostel() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-purple-50 to-white">
-       <Header />
+      <Header />
       <main className="container mx-auto px-4 py-16">
         <h1 className="text-4xl font-bold text-center mb-2 text-gray-900">
           Find Your Perfect Stay
@@ -116,6 +117,67 @@ export default function FindHostel() {
             onChange={(e) => setSearch(e.target.value)}
             className="w-72 rounded-full border-purple-200 focus:ring-purple-500"
           />
+
+          <Select value={college} onValueChange={setCollege}>
+            <SelectTrigger className="w-48 rounded-full">
+              <SelectValue placeholder="Select College" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Colleges</SelectItem>
+              <SelectItem value="tcet">
+                Thakur College of Engineering and Technology
+              </SelectItem>
+              <SelectItem value="tpoly">Thakur Polytechnic</SelectItem>
+              <SelectItem value="dj">
+                Dwarkadas J. Sanghvi College of Engineering
+              </SelectItem>
+              <SelectItem value="spit">
+                Sardar Patel Institute of Technology
+              </SelectItem>
+              <SelectItem value="vesit">
+                Vivekanand Education Society's Institute of Technology
+              </SelectItem>
+              <SelectItem value="kjsieit">
+                K. J. Somaiya Institute of Engineering and Information
+                Technology
+              </SelectItem>
+              <SelectItem value="kjscet">
+                K. J. Somaiya College of Engineering
+              </SelectItem>
+              <SelectItem value="sfit">
+                St. Francis Institute of Technology
+              </SelectItem>
+              <SelectItem value="vjit">
+                Vidyalankar Institute of Technology
+              </SelectItem>
+              <SelectItem value="fragnel">
+                Fr. Conceicao Rodrigues College of Engineering
+              </SelectItem>
+              <SelectItem value="xaviers">St. Xavier’s College</SelectItem>
+              <SelectItem value="ruia">Ramnarain Ruia College</SelectItem>
+              <SelectItem value="nm">
+                Narsee Monjee College of Commerce and Economics
+              </SelectItem>
+              <SelectItem value="mit">
+                Mukesh Patel School of Technology Management & Engineering
+              </SelectItem>
+              <SelectItem value="rait">
+                Ramrao Adik Institute of Technology
+              </SelectItem>
+              <SelectItem value="ict">
+                Institute of Chemical Technology (ICT)
+              </SelectItem>
+              <SelectItem value="iiti">
+                Indian Institute of Technology Bombay (IIT Bombay)
+              </SelectItem>
+              <SelectItem value="tsec">
+                Thadomal Shahani Engineering College
+              </SelectItem>
+              <SelectItem value="sies">
+                SIES Graduate School of Technology
+              </SelectItem>
+            </SelectContent>
+          </Select>
 
           <Select value={location} onValueChange={setLocation}>
             <SelectTrigger className="w-48 rounded-full">
