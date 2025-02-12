@@ -145,6 +145,7 @@ export default function HostelBooking() {
       setIsSubmitting(false);
     }
   };
+  document.title="Book hostel at chahtraStay"
 
   return (
     <div className="min-h-screen flex flex-col">

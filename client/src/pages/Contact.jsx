@@ -3,6 +3,7 @@ import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 
 function Contact() {
+  document.title="Contact chahtraStay"
   return (
     <div className="flex flex-col min-h-screen w-full bg-gray-50">
         <Header />

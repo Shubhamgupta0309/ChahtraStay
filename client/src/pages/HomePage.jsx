@@ -79,6 +79,7 @@ export default function HomePage() {
   }, []);
   const plugin = useRef(Autoplay({ delay: 2000, stopOnInteraction: false }));
   const navigate = useNavigate();
+  document.title="chahtraStay"
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <Header />

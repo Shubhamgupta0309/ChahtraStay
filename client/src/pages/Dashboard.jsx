@@ -36,6 +36,7 @@ import { PopoverContent } from "@radix-ui/react-popover";
 import UpdateHostel from "@/components/adminPage/UpdateHostel";
 
 const AdminDashboard = () => {
+  document.title="Dashboard chahtraStay"
   const [hostels, setHostels] = useState([]);
   const [users, setUsers] = useState([]);
   const [bookings, setBookings] = useState([]);

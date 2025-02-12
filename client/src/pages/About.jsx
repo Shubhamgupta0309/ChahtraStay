@@ -4,6 +4,7 @@ import { Card, CardTitle, CardContent } from "@/components/ui/card";
 import React from "react";
 
 function About() {
+  document.title="About chahtraStay"
   return (
     <div className="flex flex-col min-h-screen w-full bg-purple-50">
         <Header />

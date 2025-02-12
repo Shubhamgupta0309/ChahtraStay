@@ -5,7 +5,7 @@ import { Home } from "lucide-react";
 
 export default function NotFound() {
   const navigate = useNavigate();
-
+document.title="Not Found | chahtraStay"
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-purple-50 to-white px-4">
       <div className="max-w-3xl w-full text-center space-y-6">
