@@ -11,6 +11,7 @@ import {
   Shield,
   ShieldOff,
   Search,
+  PenBox,
 } from "lucide-react";
 import api from "@/api";
 import CountUp from "react-countup";
@@ -29,6 +30,10 @@ import { Toaster } from "@/components/ui/toaster";
 import SearchCard from "@/components/adminPage/SearchCard";
 import UserSearch from "@/components/adminPage/UserSearch";
 import Header from "@/components/Header";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Popover, PopoverTrigger } from "@/components/ui/popover";
+import { PopoverContent } from "@radix-ui/react-popover";
+import UpdateHostel from "@/components/adminPage/UpdateHostel";
 
 const AdminDashboard = () => {
   const [hostels, setHostels] = useState([]);
@@ -46,7 +51,12 @@ const AdminDashboard = () => {
     rules: "",
     food: "",
     mapLink: "",
+    colleges: [],
   });
+  
+  const [selectedColleges, setSelectedColleges] = useState(
+    formData.colleges || []
+  );
 
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [previewUrls, setPreviewUrls] = useState([]);
@@ -203,6 +213,7 @@ const AdminDashboard = () => {
         hostelType: "boys",
         rules: "",
         mapLink: "",
+        colleges: [],
       });
       setSelectedFiles([]);
     } catch (error) {
@@ -217,6 +228,32 @@ const AdminDashboard = () => {
     }
   };
 
+  const collegesList = [
+    { label: "Thakur College of Engineering and Technology", value: "tcet" },
+    { label: "Thakur Polytechnic", value: "tpoly" },
+    { label: "Mukesh Patel School of Technology", value: "mpstme" },
+    { label: "DJ Sanghvi College of Engineering", value: "djsce" },
+    { label: "KJ Somaiya College of Engineering", value: "kjsce" },
+    { label: "VJTI Mumbai", value: "vjti" },
+    { label: "Sardar Patel Institute of Technology", value: "spit" },
+    { label: "IIT Bombay", value: "iitb" },
+    { label: "NMIMS University", value: "nmims" },
+    { label: "Xavier Institute of Engineering", value: "xavier" },
+    { label: "Don Bosco Institute of Technology", value: "dbit" },
+    { label: "SIES Graduate School of Technology", value: "siesgst" },
+    { label: "RAIT (Ramrao Adik Institute of Technology)", value: "rait" },
+    { label: "St. Francis Institute of Technology", value: "sfit" },
+  ];
+  const handleCheckboxChange = (value) => {
+    let updatedColleges = selectedColleges.includes(value)
+      ? selectedColleges.filter((college) => college !== value)
+      : [...selectedColleges, value];
+
+    setSelectedColleges(updatedColleges);
+    setFormData({ ...formData, colleges: updatedColleges });
+  };
+  
+
   if (loading) {
     return (
       <div className="p-6">
@@ -227,7 +264,7 @@ const AdminDashboard = () => {
 
   return (
     <div className=" flex flex-col space-y-6">
-        <Header />
+      <Header />
       <h1 className="text-3xl font-bold">Admin Dashboard</h1>
       <Toaster />
       <section className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
@@ -309,6 +346,9 @@ const AdminDashboard = () => {
                       <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">
                         Rating
                       </th>
+                      <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">
+                        {""}
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
@@ -325,6 +365,9 @@ const AdminDashboard = () => {
                           {hostel.food ? hostel.food.join(", ") : "N/A"}
                         </td>
                         <td className="px-4 py-2 text-sm">{hostel.rating}/5</td>
+                        <td className="px-4 py-2 text-sm">
+                          <UpdateHostel collegesList={collegesList} hostelId={hostel?.hostelId}/>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -583,6 +626,43 @@ const AdminDashboard = () => {
                         <SelectItem value="boys">Boys Hostel</SelectItem>
                         <SelectItem value="girls">Girls Hostel</SelectItem>
                         <SelectItem value="co-ed">Co-ed Hostel</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="colleges"
+                      className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      Select Nearby Colleges
+                    </label>
+                    <Select>
+                      <SelectTrigger className="w-full mt-1 rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                        {selectedColleges.length > 0
+                          ? selectedColleges
+                              .map(
+                                (col) =>
+                                  collegesList.find((c) => c.value === col)
+                                    ?.label
+                              )
+                              .join(", ")
+                          : "Select Colleges"}
+                      </SelectTrigger>
+                      <SelectContent>
+                        {collegesList.map((college) => (
+                          <div
+                            key={college.value}
+                            className="flex items-center gap-2 p-2 cursor-pointer"
+                          >
+                            <Checkbox
+                              checked={selectedColleges.includes(college.value)}
+                              onCheckedChange={() =>
+                                handleCheckboxChange(college.value)
+                              }
+                            />
+                            <label className="text-sm">{college.label}</label>
+                          </div>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
