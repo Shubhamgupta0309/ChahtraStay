@@ -81,6 +81,7 @@ export default function HomePage() {
   const navigate = useNavigate();
   return (
     <div className="flex flex-col min-h-screen bg-white">
+      <Header />
       <Toaster />
       <section className="relative min-h-screen flex flex-col md:flex-row items-center justify-center w-full px-6 md:px-16 pt-20 bg-gradient-to-br from-purple-50 via-white to-purple-50">
         <div className="flex flex-col items-start md:w-1/2 space-y-6 z-10">
@@ -284,9 +285,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-10">
-        <Header />
-      </div>
+      
 
       <Footer />
     </div>

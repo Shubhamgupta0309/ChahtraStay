@@ -99,10 +99,7 @@ export default function FindHostel() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-purple-50 to-white">
-      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-10">
-        <Header />
-      </div>
-
+       <Header />
       <main className="container mx-auto px-4 py-16">
         <h1 className="text-4xl font-bold text-center mb-2 text-gray-900">
           Find Your Perfect Stay

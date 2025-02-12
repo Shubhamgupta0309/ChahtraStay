@@ -226,11 +226,8 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-10">
+    <div className=" flex flex-col space-y-6">
         <Header />
-      </div>
-
       <h1 className="text-3xl font-bold">Admin Dashboard</h1>
       <Toaster />
       <section className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">

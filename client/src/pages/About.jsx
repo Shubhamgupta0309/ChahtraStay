@@ -6,9 +6,7 @@ import React from "react";
 function About() {
   return (
     <div className="flex flex-col min-h-screen w-full bg-purple-50">
-      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-10">
         <Header />
-      </div>
 
       <main className="flex flex-col items-center px-6 md:px-20 py-10 space-y-8">
         <h1 className="text-3xl font-bold text-center">

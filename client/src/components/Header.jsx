@@ -10,10 +10,9 @@ const Header = () => {
   const { user, logout } = useContext(AuthContext);
 
   return (
-    <div className="w-full px-4 md:px-8 py-3 bg-gradient-to-r from-purple-900/80 to-black/80 backdrop-blur-md rounded-full shadow-xl">
+    <div className="w-full px-4 md:px-8 py-3 bg-gradient-to-r from-purple-900/80 to-black/80 backdrop-blur-md  shadow-xl">
       <div className="max-w-7xl mx-auto">
-        <nav className="flex items-center justify-between gap-4">
-          {/* Left Side - Home Button */}
+        <nav className="flex items-center justify-center gap-4">
           <div className="flex items-center space-x-3 md:space-x-6">
             <Button
               onClick={() => navigate(`/`)}
@@ -23,7 +22,6 @@ const Header = () => {
             </Button>
           </div>
 
-          {/* Center - Search & Dashboard (If Admin) */}
           <div className="flex items-center space-x-3 md:space-x-6">
             <Button
               onClick={() => navigate(`/hostel`)}
@@ -43,7 +41,6 @@ const Header = () => {
             )}
           </div>
 
-          {/* Right Side - Profile & Auth Buttons */}
           <div className="flex items-center space-x-3 md:space-x-6">
             {user ? (
               <>

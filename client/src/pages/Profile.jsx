@@ -143,6 +143,7 @@ export default function ProfilePage() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       <Toaster />
+      <Header />
       <section className="bg-gradient-to-r from-purple-600 to-purple-800 text-white py-12 md:py-20">
         <div className="container mx-auto px-6 flex flex-col items-center">
           <h1 className="text-3xl md:text-4xl font-bold text-center">
@@ -356,9 +357,6 @@ export default function ProfilePage() {
           )}
         </div>
       </section>
-      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-10">
-        <Header />
-      </div>
       <Footer />
     </div>
   );
