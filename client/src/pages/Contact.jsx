@@ -3,9 +3,9 @@ import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 
 function Contact() {
-  document.title="Contact chahtraStay"
+  document.title="Contact ChhatraStay"
   return (
-    <div className="flex flex-col min-h-screen w-full bg-gray-50">
+    <div className="flex flex-col min-h-screen w-full bg-gray-50 pt-12">
         <Header />
 
       <main className="flex flex-col items-center px-6 md:px-20 py-10 space-y-8">
@@ -15,10 +15,10 @@ function Contact() {
         <p className="text-gray-600 text-center">
           Need help? Fill out the form below or email us at{" "}
           <a
-            href="mailto:help@chahtrastay.com"
+            href="mailto:help@ChhatraStay.com"
             className="text-purple-700 font-medium"
           >
-            help@chahtrastay.com
+            help@ChhatraStay.com
           </a>
         </p>
 

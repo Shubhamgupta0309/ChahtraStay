@@ -68,7 +68,8 @@ export default function ProfilePage() {
           password: "*******",
           isPasswordChanged: false,
         });
-
+        
+        console.log(formData)
         const bookingRes = await api.get("/api/booking/my-bookings");
         setBookings(bookingRes.data || []);
       } catch (error) {

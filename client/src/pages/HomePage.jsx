@@ -285,9 +285,6 @@ export default function HomePage() {
           </Accordion>
         </div>
       </section>
-
-      
-
       <Footer />
     </div>
   );

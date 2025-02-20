@@ -99,7 +99,7 @@ export default function FindHostel() {
   const goToNextPage = () => setPage(Math.min(totalPages, page + 1));
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-purple-50 to-white">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-purple-50 to-white pt-8">
       <Header />
       <main className="container mx-auto px-4 py-16">
         <h1 className="text-4xl font-bold text-center mb-2 text-gray-900">

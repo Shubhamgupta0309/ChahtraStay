@@ -4,9 +4,9 @@ import { Card, CardTitle, CardContent } from "@/components/ui/card";
 import React from "react";
 
 function About() {
-  document.title="About chahtraStay"
+  document.title="About ChhatraStay"
   return (
-    <div className="flex flex-col min-h-screen w-full bg-purple-50">
+    <div className="flex flex-col min-h-screen w-full bg-purple-50 pt-12">
         <Header />
 
       <main className="flex flex-col items-center px-6 md:px-20 py-10 space-y-8">
@@ -16,14 +16,14 @@ function About() {
 
         <Card className="w-full max-w-3xl p-6 shadow-lg">
           <CardTitle className="text-xl mb-4 text-purple-900">
-            What is ChahtraStay?
+            What is ChhatraStay?
           </CardTitle>
           <CardContent>
             <p className="text-gray-700 leading-relaxed">
-              ChahtraStay is a student-focused hostel booking platform designed
+              ChhatraStay is a student-focused hostel booking platform designed
               to simplify the search for affordable and comfortable
               accommodations. Whether you're a student moving to a new city or a
-              traveler looking for a budget stay, ChahtraStay helps you find
+              traveler looking for a budget stay, ChhatraStay helps you find
               well-reviewed hostels with ease.
             </p>
           </CardContent>
@@ -50,7 +50,7 @@ function About() {
           </CardTitle>
           <CardContent>
             <p className="text-gray-700 leading-relaxed">
-              ChahtraStay is more than just a booking platform—it’s a growing
+              ChhatraStay is more than just a booking platform—it’s a growing
               community of students and travelers sharing real experiences. Join
               us in creating a trusted network of accommodations for students
               everywhere!
