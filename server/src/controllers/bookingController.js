@@ -73,8 +73,9 @@ export const cancelBooking = async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.id);
     if (!booking) return res.status(404).json({ message: "Booking not found" });
+    console.log(req.user.role)
 
-    if (booking.user.toString() !== req.user._id.toString() && !req.user.isAdmin) {
+    if (booking.user.toString() !== req.user._id.toString() && req.user.role != "admin") {
       return res.status(403).json({ message: "Not authorized" });
     }
 

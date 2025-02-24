@@ -61,15 +61,8 @@ export default function ProfilePage() {
     const fetchUserData = async () => {
       try {
         const userRes = await api.get("/api/user/profile");
-        setFormData({
-          name: userRes.data.userData.name || "",
-          email: userRes.data.userData.email || "",
-          phone: userRes.data.userData.phone || "",
-          password: "*******",
-          isPasswordChanged: false,
-        });
-        
-        console.log(formData)
+        // console.log("Userdata",userRes.data.userData.name)
+        setUserData(userRes.data.userData);
         const bookingRes = await api.get("/api/booking/my-bookings");
         setBookings(bookingRes.data || []);
       } catch (error) {
@@ -148,12 +141,12 @@ export default function ProfilePage() {
       <section className="bg-gradient-to-r from-purple-600 to-purple-800 text-white py-12 md:py-20">
         <div className="container mx-auto px-6 flex flex-col items-center">
           <h1 className="text-3xl md:text-4xl font-bold text-center">
-            {userData.name}'s Profile
+            {userData?.name}'s Profile
           </h1>
           <div className="mt-6">
             <Avatar className="w-32 h-32 mx-auto">
               <AvatarImage
-                src={userData.profileImage || "/icon.png"}
+                src={formData?.profileImage || "/icon.png"}
                 alt={userData?.name || "U"}
               />
               <AvatarFallback className="bg-purple-100 text-purple-600">

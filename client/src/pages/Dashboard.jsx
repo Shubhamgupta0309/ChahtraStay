@@ -42,7 +42,7 @@ const AdminDashboard = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [formLoading, setFormLoading] = useState(false);
-  const { toast } = useToast;
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: "",
     location: "",
@@ -135,7 +135,7 @@ const AdminDashboard = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    
     if (
       !formData.name.trim() ||
       !formData.location.trim() ||
@@ -146,11 +146,11 @@ const AdminDashboard = () => {
         variant: "destructive",
         title: "Validation Error",
         description:
-          "Please fill in all required fields and upload at least one image.",
+        "Please fill in all required fields and upload at least one image.",
       });
       return;
     }
-
+    
     if (isNaN(formData.price) || Number(formData.price) <= 0) {
       toast({
         variant: "destructive",
@@ -167,15 +167,16 @@ const AdminDashboard = () => {
       )
     ) {
       toast({
-        variant: "destructive",
+        // variant: "destructive",
         title: "Invalid Map Link",
         description: "Please enter a valid map URL.",
       });
+      console.log("hello")
       return;
     }
 
     setFormLoading(true);
-
+    
     const data = new FormData();
 
     Object.keys(formData).forEach((key) => {
@@ -203,6 +204,8 @@ const AdminDashboard = () => {
         title: "Success!",
         description: "Hostel added successfully.",
       });
+
+      console.log("Hostel Added")
 
       setHostels((prev) => [...prev, response.data]);
 
@@ -639,7 +642,7 @@ const AdminDashboard = () => {
                     </label>
                     <Select>
                       <SelectTrigger className="w-full mt-1 rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
-                        {selectedColleges.length > 0
+                        {/* {selectedColleges.length > 0
                           ? selectedColleges
                               .map(
                                 (col) =>
@@ -647,7 +650,8 @@ const AdminDashboard = () => {
                                     ?.label
                               )
                               .join(", ")
-                          : "Select Colleges"}
+                          : "Select Colleges"} */}
+                          {selectedColleges.length>0 ? `${selectedColleges[0]}`: `Select College`}
                       </SelectTrigger>
                       <SelectContent>
                         {collegesList.map((college) => (

@@ -1,4 +1,4 @@
-import Hostel from "../model/HostelModel.js";
+import Hostel from "../model/HostelModel.js"
 
 export const createHostel = async (req, res) => {
   const { name, location, price, amenities, hostelType, rules, food, mapLink, colleges } = req.body;

@@ -115,7 +115,7 @@ export const AuthProvider = ({ children }) => {
       setUser(JSON.parse(storedUser));
       setAuthToken(storedToken);
       // Optionally verify token with backend
-      api.get("/api/user/verify-token")
+      api.get("/api/user/profile")
         .catch(() => clearAuthState());
     }
     setLoading(false);

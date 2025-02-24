@@ -2,7 +2,6 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getAnalytics } from "firebase/analytics";
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyB2xkzkyJHnXKc6CTcCwryEnZgOBx3SiKA",
   authDomain: "chhatrastay.firebaseapp.com",
@@ -13,7 +12,6 @@ const firebaseConfig = {
   measurementId: "G-HE7DXWH16X"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const analytics = getAnalytics(app);
