@@ -1,0 +1,6 @@
+import{a as o,c as a,d}from"./createLucideIcon-AdlLZUEa.js";import{r as s,j as l}from"./index-CbzP6hy5.js";/**
+ * @license lucide-react v0.475.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */const c=[["circle",{cx:"12",cy:"12",r:"10",key:"1mglay"}],["line",{x1:"12",x2:"12",y1:"8",y2:"12",key:"1pkeuh"}],["line",{x1:"12",x2:"12.01",y1:"16",y2:"16",key:"4dfq90"}]],m=o("CircleAlert",c),n=d("relative w-full rounded-lg border px-4 py-3 text-sm [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-foreground [&>svg~*]:pl-7",{variants:{variant:{default:"bg-background text-foreground",destructive:"border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive"}},defaultVariants:{variant:"default"}}),x=s.forwardRef(({className:e,variant:t,...r},i)=>l.jsx("div",{ref:i,role:"alert",className:a(n({variant:t}),e),...r}));x.displayName="Alert";const v=s.forwardRef(({className:e,...t},r)=>l.jsx("h5",{ref:r,className:a("mb-1 font-medium leading-none tracking-tight",e),...t}));v.displayName="AlertTitle";const u=s.forwardRef(({className:e,...t},r)=>l.jsx("div",{ref:r,className:a("text-sm [&_p]:leading-relaxed",e),...t}));u.displayName="AlertDescription";export{x as A,m as C,u as a};

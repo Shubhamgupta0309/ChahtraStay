@@ -3,6 +3,7 @@ import Hostel from "../model/HostelModel.js";
 export const createHostel = async (req, res) => {
   console.log("Creating hostel...");
   console.log("Request body", req.body);
+  console.log("Request user (from protect middleware):", req.user);
   const {
     name,
     location,
@@ -88,7 +89,7 @@ export const createHostel = async (req, res) => {
       .status(201)
       .json({ message: "Hostel Created", hostel: newHostel });
   } catch (error) {
-    console.error("Error creating hostel:", error.message);
+    console.error("Error creating hostel:", error);
     return res
       .status(500)
       .json({ message: "Server error. Please try again later." });
@@ -100,7 +101,8 @@ export const getAllHostels = async (req, res) => {
     const hostels = await Hostel.find();
     res.status(200).json(hostels);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('getAllHostels error:', error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 

@@ -3,8 +3,10 @@ import User from "../model/UserModel.js";
 
 export const protect = async (req, res, next) => {
   try {
-   
-    let token =  req.headers.authorization;
+    // Diagnostic: log the incoming Authorization header (do not log in production)
+    console.log('authMiddleware - Authorization header:', req.headers.authorization);
+
+    let token = req.headers.authorization;
     if (req.headers.authorization?.startsWith("Bearer ")) {
       token = req.headers.authorization.split(" ")[1];
     }
@@ -13,7 +15,17 @@ export const protect = async (req, res, next) => {
       return res.status(401).json({ message: "Not authorized, please log in" });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (err) {
+      console.error('authMiddleware - JWT verify error:', err.message);
+      throw err; // will be handled by outer catch
+    }
+
+    // Diagnostic: log decoded token id (do not log in production)
+    console.log('authMiddleware - decoded token:', decoded);
+
     req.user = await User.findById(decoded.id).select("-password");
 
     if (!req.user) {
@@ -25,7 +37,7 @@ export const protect = async (req, res, next) => {
     if (error.name === "TokenExpiredError") {
       return res.status(401).json({ message: "Token expired, please log in again" });
     }
-    console.log(error.message)
+    console.log('authMiddleware - error:', error.message);
     res.status(401).json({ message: "Invalid token, please log in" });
   }
 };
