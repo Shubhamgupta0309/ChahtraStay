@@ -1,0 +1,8 @@
+node_modules/
+*.env
+**/.env
+.DS_Store
+Thumbs.db
+.vscode/
+server/node_modules/
+client/node_modules/

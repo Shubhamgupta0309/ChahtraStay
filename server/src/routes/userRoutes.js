@@ -21,6 +21,8 @@ router.get("/", (req, res) => {
   });
 });
 
+// Google OAuth route removed
+
 router.post("/signup", registerUser);
 router.post("/login", loginUser);
 

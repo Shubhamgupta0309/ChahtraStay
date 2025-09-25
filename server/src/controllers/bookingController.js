@@ -1,18 +1,40 @@
-import express from "express";
-import Booking from "../model/BookingModel.js"
-
-const router = express.Router();
-
+import { sendNotification } from "../discordBot/NotificationBot.js";
+import Booking from "../model/BookingModel.js";
+import Hostel from "../model/HostelModel.js";
 export const createBooking = async (req, res) => {
   try {
-    const { checkIn, hostelId, checkOut, roomSelection, name, email, phone, gender, occupation, amount, transactionId } = req.body;
+    const {
+      checkIn,
+      checkOut,
+      hostelId,
+      roomSelection,
+      name,
+      email,
+      phone,
+      gender,
+      amount,
+      receiptId
+    } = req.body;
 
-    if (!checkIn || !hostelId || !checkOut || !roomSelection || !amount || !name || !email || !phone || !gender || !occupation || !transactionId) {
+    if (
+      !checkIn || !checkOut || !hostelId || !roomSelection || !amount ||
+      !name || !email || !phone || !gender || !receiptId
+    ) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
     if (!req.user) {
       return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const hostel = await Hostel.findOne({ hostelId });
+    if (!hostel) return res.status(404).json({ message: "Hostel not found" });
+
+    const roomType = hostel.roomTypes.find(room => room.type === roomSelection);
+    if (!roomType) return res.status(404).json({ message: "Room type not found" });
+
+    if (roomType.availability <= 0) {
+      return res.status(400).json({ message: "No available rooms for this type" });
     }
 
     const newBooking = new Booking({
@@ -26,17 +48,22 @@ export const createBooking = async (req, res) => {
       email,
       phone,
       gender,
-      occupation,
-      transactionId,
-      status: "pending"
+      receiptId,
+      status: "pending",
     });
 
     await newBooking.save();
+
+    roomType.availability -= 1;
+    await hostel.save();
+    await sendNotification("booking",newBooking);
+
     res.status(201).json(newBooking);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 export const getAllBookings = async (req, res) => {
   try {
@@ -73,14 +100,28 @@ export const cancelBooking = async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.id);
     if (!booking) return res.status(404).json({ message: "Booking not found" });
-    console.log(req.user.role)
 
-    if (booking.user.toString() !== req.user._id.toString() && req.user.role != "admin") {
+    if (
+      booking.user.toString() !== req.user._id.toString() &&
+      req.user.role !== "admin"
+    ) {
       return res.status(403).json({ message: "Not authorized" });
     }
 
+    const hostel = await Hostel.findOne({ hostelId: booking.hostelId });
+    if (!hostel) return res.status(404).json({ message: "Hostel not found" });
+
+    // Find the room type
+    const roomType = hostel.roomTypes.find(room => room.type === booking.roomSelection);
+    if (roomType) {
+      roomType.availability += 1;
+      await hostel.save();
+    }
+
+    // Update booking status
     booking.status = "cancelled";
     await booking.save();
+
     res.status(200).json({ message: "Booking cancelled", booking });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -91,7 +132,7 @@ export const confirmBooking = async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.id);
     if (!booking) return res.status(404).json({ message: "Booking not found" });
-    
+
     booking.status = "confirmed";
     await booking.save();
     res.status(200).json({ message: "Booking confirmed", booking });
@@ -122,11 +163,9 @@ export const generateReceipt = async (req, res) => {
         totalAmount: booking.amount,
         transactionId: booking.transactionId,
         status: booking.status,
-      }
+      },
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
-export default router;

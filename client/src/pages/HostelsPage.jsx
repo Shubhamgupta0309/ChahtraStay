@@ -15,16 +15,31 @@ import {
   PaginationItem,
   PaginationLink,
 } from "@/components/ui/pagination";
-import { Star, MapPin, Wifi, Car, Dumbbell } from "lucide-react";
+import {
+  Star,
+  MapPin,
+  Wifi,
+  Car,
+  Dumbbell,
+  Shield,
+  Utensils,
+  Tv,
+  BookOpen,
+} from "lucide-react";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
 
-const amenityIcons = {
-  WiFi: <Wifi className="h-4 w-4" />,
-  Parking: <Car className="h-4 w-4" />,
-  Gym: <Dumbbell className="h-4 w-4" />,
+// Updated amenity icons based on the facilities in the data
+const facilityIcons = {
+  wifi: <Wifi className="mr-1 h-4 w-4" />,
+  parking: <Car className="mr-1 h-4 w-4" />,
+  gym: <Dumbbell className="mr-1 h-4 w-4" />,
+  security: <Shield className="mr-1 h-4 w-4" />,
+  canteen: <Utensils className="mr-1 h-4 w-4" />,
+  tv: <Tv className="mr-1 h-4 w-4" />,
+  studyRoom: <BookOpen className="mr-1 h-4 w-4" />,
 };
 
 export default function FindHostel() {
@@ -43,7 +58,12 @@ export default function FindHostel() {
       setIsLoading(true);
       try {
         const res = await api.get("/api/hostel/");
-        setHostels(res.data);
+        // Filter to only include hostels with available rooms
+        const hostelsWithAvailability = res.data.filter((hostel) =>
+          hasAvailableRooms(hostel.roomTypes)
+        );
+        setHostels(hostelsWithAvailability);
+        setFilteredHostels(hostelsWithAvailability);
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -53,30 +73,43 @@ export default function FindHostel() {
     fetchData();
   }, []);
 
+  // Check if hostel has any available rooms
+  const hasAvailableRooms = (roomTypes) => {
+    if (!roomTypes || roomTypes.length === 0) return false;
+    return roomTypes.some((room) => room.availability > 0);
+  };
+
   useEffect(() => {
     if (hostels.length) {
       setIsLoading(true);
       const timer = setTimeout(() => {
         let filtered = hostels.filter((hostel) => {
+          // Get lowest price from room types
+          const lowestPrice = Math.min(
+            ...hostel.roomTypes.map((room) => room.pricePerMonth)
+          );
+
           return (
             (search === "" ||
               hostel.name.toLowerCase().includes(search.toLowerCase()) ||
               hostel.location.toLowerCase().includes(search.toLowerCase())) &&
             (location === "all" || hostel.location.includes(location)) &&
-            (price === "none" || hostel.price <= parseInt(price)) && (college === "all" || hostel.colleges.includes(college))
+            (price === "none" || lowestPrice <= parseInt(price)) &&
+            (college === "all" ||
+              hostel.colleges.some((clg) =>
+                clg.toLowerCase().includes(college.toLowerCase())
+              ))
           );
         });
         setFilteredHostels(filtered);
         setIsLoading(false);
       }, 300);
-
       return () => clearTimeout(timer);
     }
   }, [search, location, price, college, hostels]);
 
   const itemsPerPage = 6;
   const totalPages = Math.ceil(filteredHostels.length / itemsPerPage);
-
   const paginatedHostels = filteredHostels.slice(
     (page - 1) * itemsPerPage,
     page * itemsPerPage
@@ -87,100 +120,121 @@ export default function FindHostel() {
       <Star
         key={index}
         className={`h-4 w-4 ${
-          index < Math.floor(rating)
-            ? "text-yellow-400 fill-yellow-400"
-            : "text-gray-300"
+          index < rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
         }`}
       />
     ));
+  };
+
+  // Get key facilities to display
+  const getKeyFacilities = (facilities) => {
+    const keyFacilities = [];
+
+    if (facilities.wifi) keyFacilities.push("wifi");
+    if (facilities.parking) keyFacilities.push("parking");
+    if (facilities.gym) keyFacilities.push("gym");
+    if (facilities.canteen) keyFacilities.push("canteen");
+    if (facilities.studyRoom) keyFacilities.push("studyRoom");
+    if (facilities.tv) keyFacilities.push("tv");
+    if (
+      facilities.security &&
+      (facilities.security.cctv ||
+        facilities.security.securityGuards ||
+        facilities.security.biometricEntry)
+    ) {
+      keyFacilities.push("security");
+    }
+
+    return keyFacilities.slice(0, 4); // Show max 4 facilities
+  };
+
+  // Get lowest price from room types with availability
+  const getLowestPrice = (roomTypes) => {
+    if (!roomTypes || roomTypes.length === 0) return 0;
+    const availableRooms = roomTypes.filter((room) => room.availability > 0);
+    if (availableRooms.length === 0) return 0;
+    return Math.min(...availableRooms.map((room) => room.pricePerMonth));
+  };
+
+  // Get total available rooms
+  const getTotalAvailableRooms = (roomTypes) => {
+    if (!roomTypes || roomTypes.length === 0) return 0;
+    return roomTypes.reduce((total, room) => total + room.availability, 0);
   };
 
   const goToPreviousPage = () => setPage(Math.max(1, page - 1));
   const goToNextPage = () => setPage(Math.min(totalPages, page + 1));
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-purple-50 to-white pt-8">
-      <Header />
-      <main className="container mx-auto px-4 py-16">
-        <h1 className="text-4xl font-bold text-center mb-2 text-gray-900">
-          Find Your Perfect Stay
-        </h1>
-        <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
-          Browse through our curated selection of hostels and PGs designed for
-          students
-        </p>
-
-        <div className="flex flex-wrap gap-4 justify-center mb-12 max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gray-50">
+      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-10">
+        <Header />
+      </div>
+      <main className="container mx-auto px-4 py-8">
+        <div className="text-center mb-12">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Find Your Perfect Stay
+          </h1>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Browse through our curated selection of hostels and PGs designed for
+            students
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-4 justify-center mb-8">
           <Input
-            placeholder="Search by name or location"
+            type="text"
+            placeholder="Search by name or location..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-72 rounded-full border-purple-200 focus:ring-purple-500"
           />
-
           <Select value={college} onValueChange={setCollege}>
-            <SelectTrigger className="w-48 rounded-full">
+            <SelectTrigger className="w-56">
               <SelectValue placeholder="Select College" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Colleges</SelectItem>
-              <SelectItem value="tcet">
-                Thakur College of Engineering and Technology
-              </SelectItem>
-              <SelectItem value="tpoly">Thakur Polytechnic</SelectItem>
-              <SelectItem value="dj">
-                Dwarkadas J. Sanghvi College of Engineering
+              <SelectItem value="iitb">IIT Bombay</SelectItem>
+              <SelectItem value="vjti">VJTI Mumbai</SelectItem>
+              <SelectItem value="ict">
+                Institute of Chemical Technology (ICT)
               </SelectItem>
               <SelectItem value="spit">
                 Sardar Patel Institute of Technology
               </SelectItem>
-              <SelectItem value="vesit">
-                Vivekanand Education Society's Institute of Technology
+              <SelectItem value="kjsce">
+                KJ Somaiya College of Engineering
               </SelectItem>
-              <SelectItem value="kjsieit">
-                K. J. Somaiya Institute of Engineering and Information
-                Technology
+              <SelectItem value="djsce">
+                DJ Sanghvi College of Engineering
               </SelectItem>
-              <SelectItem value="kjscet">
-                K. J. Somaiya College of Engineering
+              <SelectItem value="mpstme">
+                Mukesh Patel School of Technology
+              </SelectItem>
+              <SelectItem value="nmims">NMIMS University</SelectItem>
+              <SelectItem value="rait">
+                Ramrao Adik Institute of Technology (RAIT)
+              </SelectItem>
+              <SelectItem value="tcet">
+                Thakur College of Engineering and Technology
               </SelectItem>
               <SelectItem value="sfit">
                 St. Francis Institute of Technology
               </SelectItem>
-              <SelectItem value="vjit">
-                Vidyalankar Institute of Technology
-              </SelectItem>
-              <SelectItem value="fragnel">
-                Fr. Conceicao Rodrigues College of Engineering
-              </SelectItem>
-              <SelectItem value="xaviers">St. Xavier’s College</SelectItem>
-              <SelectItem value="ruia">Ramnarain Ruia College</SelectItem>
-              <SelectItem value="nm">
-                Narsee Monjee College of Commerce and Economics
-              </SelectItem>
-              <SelectItem value="mit">
-                Mukesh Patel School of Technology Management & Engineering
-              </SelectItem>
-              <SelectItem value="rait">
-                Ramrao Adik Institute of Technology
-              </SelectItem>
-              <SelectItem value="ict">
-                Institute of Chemical Technology (ICT)
-              </SelectItem>
-              <SelectItem value="iiti">
-                Indian Institute of Technology Bombay (IIT Bombay)
-              </SelectItem>
-              <SelectItem value="tsec">
-                Thadomal Shahani Engineering College
-              </SelectItem>
-              <SelectItem value="sies">
+              <SelectItem value="siesgst">
                 SIES Graduate School of Technology
               </SelectItem>
+              <SelectItem value="dbit">
+                Don Bosco Institute of Technology
+              </SelectItem>
+              <SelectItem value="xavier">
+                Xavier Institute of Engineering
+              </SelectItem>
+              <SelectItem value="tpoly">Thakur Polytechnic</SelectItem>
             </SelectContent>
           </Select>
-
           <Select value={location} onValueChange={setLocation}>
-            <SelectTrigger className="w-48 rounded-full">
+            <SelectTrigger className="w-56">
               <SelectValue placeholder="Select Location" />
             </SelectTrigger>
             <SelectContent>
@@ -216,10 +270,9 @@ export default function FindHostel() {
               <SelectItem value="Raipur">Raipur</SelectItem>
             </SelectContent>
           </Select>
-
           <Select value={price} onValueChange={setPrice}>
-            <SelectTrigger className="w-48 rounded-full">
-              <SelectValue placeholder="Max Price" />
+            <SelectTrigger className="w-44">
+              <SelectValue placeholder="Price Range" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="none">No Limit</SelectItem>
@@ -229,34 +282,31 @@ export default function FindHostel() {
             </SelectContent>
           </Select>
         </div>
-
-        <div className="text-center mb-6">
+        <div className="flex justify-center mb-6">
           <Button
-            variant="outline"
             onClick={() => {
               setSearch("");
               setLocation("all");
               setPrice("none");
+              setCollege("all");
             }}
             className="text-sm"
           >
             Reset Filters
           </Button>
         </div>
-
-        <div className="mb-6 text-gray-600 text-center">
-          Found {filteredHostels.length} properties
+        <div className="text-center mb-6 text-gray-600">
+          Found {filteredHostels.length} properties with available rooms
         </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
           {isLoading ? (
             [...Array(6)].map((_, index) => (
-              <Card key={index} className="animate-pulse">
-                <div className="h-48 bg-gray-200 rounded-t-lg" />
+              <Card key={index} className="overflow-hidden animate-pulse">
+                <div className="h-48 bg-gray-200"></div>
                 <CardContent className="p-4">
-                  <div className="h-6 bg-gray-200 rounded w-3/4 mb-2" />
-                  <div className="h-4 bg-gray-200 rounded w-1/2 mb-2" />
-                  <div className="h-4 bg-gray-200 rounded w-1/4" />
+                  <div className="h-6 bg-gray-200 mb-2 rounded"></div>
+                  <div className="h-4 bg-gray-200 mb-4 rounded w-3/4"></div>
+                  <div className="h-10 bg-gray-200 rounded"></div>
                 </CardContent>
               </Card>
             ))
@@ -264,44 +314,64 @@ export default function FindHostel() {
             paginatedHostels.map((hostel) => (
               <Card
                 key={hostel._id}
-                className="overflow-hidden hover:shadow-xl transition-shadow duration-300 bg-white"
+                className="overflow-hidden hover:shadow-lg transition-shadow"
               >
-                <div className="relative">
+                <div className="relative h-48 overflow-hidden">
                   <img
-                    src={hostel.images[0]}
+                    src={
+                      hostel.images && hostel.images.length > 0
+                        ? hostel.images[0]
+                        : "/placeholder-hostel.jpg"
+                    }
                     alt={hostel.name}
-                    className="w-full h-48 object-cover"
+                    className="w-full h-full object-cover"
                   />
-                  <div className="absolute top-4 right-4 bg-white px-2 py-1 rounded-full text-sm font-semibold text-purple-600">
-                    ₹{hostel.price.toLocaleString()}/month
+                  <div className="absolute top-2 right-2 bg-purple-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+                    ₹{getLowestPrice(hostel.roomTypes).toLocaleString()}/month
                   </div>
-                </div>
-                <CardContent className="p-6">
-                  <h2 className="text-xl font-semibold mb-2 text-gray-900">
-                    {hostel.name}
-                  </h2>
-                  <div className="flex items-center text-gray-600 mb-3">
-                    <MapPin className="h-4 w-4 mr-1" />
-                    <span className="text-sm">{hostel.location}</span>
+                  <div className="absolute bottom-2 left-2 bg-green-600 text-white px-3 py-1 rounded-full text-xs font-medium">
+                    {getTotalAvailableRooms(hostel.roomTypes)}{" "}
+                    {getTotalAvailableRooms(hostel.roomTypes) === 1
+                      ? "room"
+                      : "rooms"}{" "}
+                    available
                   </div>
-                  <div className="flex items-center mb-4">
-                    <div className="flex mr-2">
-                      {renderStars(hostel.rating)}
+                  {hostel.hostelType && (
+                    <div className="absolute top-2 left-2 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-medium capitalize">
+                      {hostel.hostelType}
                     </div>
-                    <span className="text-sm text-gray-600">
-                      ({hostel.reviews} reviews)
+                  )}
+                </div>
+                <CardContent className="p-4">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-1">
+                    {hostel.name}
+                  </h3>
+                  <p className="text-gray-600 text-sm mb-2 flex items-center">
+                    <MapPin className="h-4 w-4 mr-1 text-gray-400" />
+                    {hostel.location}
+                  </p>
+                  <div className="flex items-center mb-3">
+                    <div className="flex mr-1">
+                      {renderStars(hostel.rating || 0)}
+                    </div>
+                    <span className="text-sm text-gray-500">
+                      ({hostel.reviews ? hostel.reviews.length : 0} reviews)
                     </span>
                   </div>
-                  <div className="flex gap-2 mb-4">
-                    {hostel.amenities.map((amenity) => (
-                      <div
-                        key={amenity}
-                        className="flex items-center bg-purple-50 px-2 py-1 rounded-full text-xs text-purple-600"
-                      >
-                        {amenityIcons[amenity]}
-                        <span className="ml-1">{amenity}</span>
-                      </div>
-                    ))}
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {hostel.facilities &&
+                      getKeyFacilities(hostel.facilities).map((facility) => (
+                        <span
+                          key={facility}
+                          className="inline-flex items-center text-xs bg-purple-50 text-purple-700 px-2 py-1 rounded"
+                        >
+                          {facilityIcons[facility]}
+                          {facility === "studyRoom"
+                            ? "Study Room"
+                            : facility.charAt(0).toUpperCase() +
+                              facility.slice(1)}
+                        </span>
+                      ))}
                   </div>
                   <Button
                     onClick={() => {
@@ -315,8 +385,8 @@ export default function FindHostel() {
               </Card>
             ))
           ) : (
-            <div className="col-span-full text-center py-12">
-              <p className="text-xl text-gray-600">
+            <div className="col-span-full text-center py-10">
+              <p className="text-gray-600 mb-4">
                 No properties found matching your criteria.
               </p>
               <Button
@@ -324,6 +394,7 @@ export default function FindHostel() {
                   setSearch("");
                   setLocation("all");
                   setPrice("none");
+                  setCollege("all");
                 }}
                 variant="outline"
                 className="mt-4"
@@ -334,40 +405,40 @@ export default function FindHostel() {
           )}
         </div>
         {filteredHostels.length > itemsPerPage && (
-          <Pagination className="mt-12">
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationLink
-                  onClick={goToPreviousPage}
-                  disabled={page === 1}
-                  className={page === 1 ? "opacity-50 cursor-not-allowed" : ""}
-                >
-                  Previous
-                </PaginationLink>
-              </PaginationItem>
-              {[...Array(totalPages)].map((_, i) => (
-                <PaginationItem key={i}>
+          <div className="flex justify-center">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
                   <PaginationLink
-                    onClick={() => setPage(i + 1)}
-                    className={i + 1 === page ? "bg-purple-500 text-white" : ""}
+                    onClick={goToPreviousPage}
+                    disabled={page === 1}
                   >
-                    {i + 1}
+                    Previous
                   </PaginationLink>
                 </PaginationItem>
-              ))}
-              <PaginationItem>
-                <PaginationLink
-                  onClick={goToNextPage}
-                  disabled={page === totalPages}
-                  className={
-                    page === totalPages ? "opacity-50 cursor-not-allowed" : ""
-                  }
-                >
-                  Next
-                </PaginationLink>
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
+                {[...Array(totalPages)].map((_, i) => (
+                  <PaginationItem key={i}>
+                    <PaginationLink
+                      onClick={() => setPage(i + 1)}
+                      className={
+                        i + 1 === page ? "bg-purple-500 text-white" : ""
+                      }
+                    >
+                      {i + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                <PaginationItem>
+                  <PaginationLink
+                    onClick={goToNextPage}
+                    disabled={page === totalPages}
+                  >
+                    Next
+                  </PaginationLink>
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
         )}
       </main>
       <Footer />

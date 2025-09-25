@@ -37,7 +37,7 @@ export default function HomePage() {
       img: "/dheeru.png",
       name: "Dheeru Gupta",
       review:
-        "ChahtraStay made my hostel search so much easier! The website is user-friendly, and I found the perfect place near my college within minutes.",
+        "TravelTribe made my hostel search so much easier! The website is user-friendly, and I found the perfect place near my college within minutes.",
     },
     {
       id: 2,
@@ -51,14 +51,14 @@ export default function HomePage() {
       img: "/harshal.png",
       name: "Harshal Dangela",
       review:
-        "I was struggling to find a good hostel near my college, but ChahtraStay provided me with great options. The reviews and amenities section were really helpful!",
+        "I was struggling to find a good hostel near my college, but TravelTribe provided me with great options. The reviews and amenities section were really helpful!",
     },
     {
       id: 4,
       img: "/shubham.png",
       name: "Shubham Gupta",
       review:
-        "ChahtraStay saved me so much time! I could easily compare hostels, check prices, and choose the best one that suited my budget and needs.",
+        "TravelTribe saved me so much time! I could easily compare hostels, check prices, and choose the best one that suited my budget and needs.",
     },
     {
       id: 5,
@@ -72,23 +72,36 @@ export default function HomePage() {
   const [hostels, setHostels] = useState([]);
   useEffect(() => {
     const fetchHostels = async () => {
-      const res = await api.get("/api/hostel");
-      setHostels(res.data);
+      try {
+        const res = await api.get("/api/hostel");
+        // Ensure we received an array before setting state
+        if (Array.isArray(res.data)) {
+          setHostels(res.data);
+        } else {
+          console.warn("Unexpected hostels response shape:", res.data);
+          setHostels([]);
+        }
+      } catch (err) {
+        console.error("Failed to fetch hostels:", err);
+        setHostels([]);
+      }
     };
     fetchHostels();
   }, []);
   const plugin = useRef(Autoplay({ delay: 2000, stopOnInteraction: false }));
   const navigate = useNavigate();
-  document.title="chahtraStay"
+  document.title="TravelTribe"
   return (
     <div className="flex flex-col min-h-screen bg-white">
-      <Header />
+      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-10">
+        <Header />
+      </div>
       <Toaster />
       <section className="relative min-h-screen flex flex-col md:flex-row items-center justify-center w-full px-6 md:px-16 pt-20 bg-gradient-to-br from-purple-50 via-white to-purple-50">
         <div className="flex flex-col items-start md:w-1/2 space-y-6 z-10">
           <div className="space-y-4">
             <h1 className="text-5xl md:text-6xl text-purple-600 font-bold tracking-tight">
-              ChahtraStay
+              TravelTribe
             </h1>
             <h3 className="text-3xl md:text-4xl font-bold text-gray-900">
               Find Your Perfect Stay!
@@ -172,9 +185,9 @@ export default function HomePage() {
                     key={index}
                     className="md:basis-1/2 lg:basis-1/3 pl-4"
                   >
-                    <Card className="p-4 hover:shadow-xl transition-all duration-300 bg-white">
+                    <Card className="bg-white p-4 hover:shadow-xl transition-all duration-300 ">
                       <CardTitle className="text-xl font-semibold text-center mb-4">
-                        {hostel.name}
+                        {hostel?.name.length > 25 ? `${hostel.name.slice(0, 25)}...` : hostel.name}
                       </CardTitle>
                       <CardContent className="flex flex-col items-center p-0">
                         <img
@@ -216,7 +229,7 @@ export default function HomePage() {
               {testimonials.map((data, index) => (
                 <CarouselItem
                   key={index}
-                  className="md:basis-1/2 lg:basis-1/3 pl-4"
+                  className="md:basis-1/2 lg:basis-1/3 pl-4 hover:cursor-pointer hover:select-none "
                 >
                   <Card className="shadow-lg hover:shadow-xl transition-all duration-500 transform hover:scale-110  hover:bg-purple-50">
                     <CardContent className="p-8 flex flex-col items-center">
@@ -285,6 +298,9 @@ export default function HomePage() {
           </Accordion>
         </div>
       </section>
+
+      
+
       <Footer />
     </div>
   );

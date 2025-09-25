@@ -1,6 +1,8 @@
 import User from "../model/UserModel.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { sendNotification } from "../discordBot/NotificationBot.js";
+// Google OAuth handling removed
 
 export const registerUser = async (req, res) => {
   try {
@@ -12,7 +14,7 @@ export const registerUser = async (req, res) => {
     }
     const userExists = await User.findOne({ email });
     if (userExists)
-      return res.status(400).json({ message: "User already exists" });
+      return res.status(409).json({ message: "User already exists" });
 
     const newUser = new User({ name, email, password, phone, role });
 
@@ -22,6 +24,7 @@ export const registerUser = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
+    await sendNotification("register", newUser);
     res.status(201).json({ message: "User registered successfully", token });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
@@ -50,6 +53,7 @@ export const loginUser = async (req, res) => {
       httpOnly: true,
       secure: true,
     });
+    await sendNotification("login", user);
 
     res.json({
       message: "Login successful",

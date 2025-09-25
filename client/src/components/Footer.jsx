@@ -2,21 +2,39 @@ import { toast } from "@/hooks/use-toast";
 import { Button } from "./ui/button";
 import { Toaster } from "./ui/toaster";
 import { useState } from "react";
+import api from "@/api";
 
 const Footer = () => {
-  const [email, setEmail] = useState(""); 
+  const [email, setEmail] = useState("");
 
-  const handleSubscribe = () => {
+  const handleSubscribe = async () => {
     if (!email) {
       return toast({
-        variant: "destructive", 
+        variant: "destructive",
         title: "Please, Enter your email",
       });
     }
-    toast({
-      title: "Thank you for subscribing to ChahtraStay!",
-    });
-    setEmail("")
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return toast({
+        variant: "destructive",
+        title: "Please, Enter a valid email",
+      });
+    }
+    try {
+      await api.post("/api/subscribe", {
+        email,
+      });
+      toast({
+        title: "Thank you for subscribing to TravelTribe!",
+      });
+      setEmail("");
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Subscription failed. Please try again.",
+      });
+    }
   };
 
   return (
@@ -24,7 +42,7 @@ const Footer = () => {
       <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-6">
         <div>
           <Toaster />
-          <h2 className="text-2xl font-bold">ChahtraStay</h2>
+          <h2 className="text-2xl font-bold">TravelTribe</h2>
           <p className="mt-2 text-gray-400">
             Your trusted hostel booking platform. Find budget-friendly stays
             with ease.
@@ -67,7 +85,7 @@ const Footer = () => {
             </li>
             <li>
               <a
-                href="mailto:support@chahtrastay.com"
+                href="mailto:support@TravelTribe.com"
                 className="hover:text-white"
               >
                 Email Us
@@ -81,7 +99,7 @@ const Footer = () => {
           <div className="flex items-center bg-gray-800 rounded-full">
             <input
               type="email"
-              value={email} 
+              value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               className="bg-transparent text-white outline-none flex-grow px-2 py-1"
@@ -111,7 +129,7 @@ const Footer = () => {
       </div>
 
       <div className="mt-8 mb-10 text-center text-gray-500 text-sm border-t border-gray-700 pt-4">
-        <p>© {new Date().getFullYear()} ChahtraStay. All rights reserved.</p>
+        <p>© {new Date().getFullYear()} TravelTribe. All rights reserved.</p>
         <a href="#" className="hover:text-white mx-2">
           Terms of Service
         </a>{" "}

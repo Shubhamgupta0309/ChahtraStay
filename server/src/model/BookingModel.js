@@ -27,7 +27,7 @@ const bookingSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    transactionId: {
+    receiptId: {
       type: String,
       required: true,
       unique: true,
@@ -48,10 +48,6 @@ const bookingSchema = new mongoose.Schema(
       type: String,
       required: true,
       enum: ["male", "female", "other"],
-    },
-    occupation: {
-      type: String,
-      required: true,
     },
     status: {
       type: String,

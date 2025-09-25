@@ -4,26 +4,28 @@ import { Card, CardTitle, CardContent } from "@/components/ui/card";
 import React from "react";
 
 function About() {
-  document.title="About ChhatraStay"
+  document.title="About TravelTribe"
   return (
-    <div className="flex flex-col min-h-screen w-full bg-purple-50 pt-12">
+    <div className="flex flex-col min-h-screen w-full bg-purple-50">
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-10">
         <Header />
+      </div>
 
       <main className="flex flex-col items-center px-6 md:px-20 py-10 space-y-8">
         <h1 className="text-3xl font-bold text-center">
-          About Chahtra<span className="text-purple-900">Stay</span>
+          About Travel<span className="text-purple-900">Tribe</span>
         </h1>
 
         <Card className="w-full max-w-3xl p-6 shadow-lg">
           <CardTitle className="text-xl mb-4 text-purple-900">
-            What is ChhatraStay?
+            What is TravelTribe?
           </CardTitle>
           <CardContent>
             <p className="text-gray-700 leading-relaxed">
-              ChhatraStay is a student-focused hostel booking platform designed
+              TravelTribe is a student-focused hostel booking platform designed
               to simplify the search for affordable and comfortable
               accommodations. Whether you're a student moving to a new city or a
-              traveler looking for a budget stay, ChhatraStay helps you find
+              traveler looking for a budget stay, TravelTribe helps you find
               well-reviewed hostels with ease.
             </p>
           </CardContent>
@@ -50,7 +52,7 @@ function About() {
           </CardTitle>
           <CardContent>
             <p className="text-gray-700 leading-relaxed">
-              ChhatraStay is more than just a booking platform—it’s a growing
+              TravelTribe is more than just a booking platform—it’s a growing
               community of students and travelers sharing real experiences. Join
               us in creating a trusted network of accommodations for students
               everywhere!

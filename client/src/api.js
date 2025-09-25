@@ -1,9 +1,12 @@
 import axios from "axios";
-import { auth } from './firebaseConfig';
+
+// Support either VITE_BACKEND_URL (used in some configs) or VITE_API_URL (present in .env)
+const baseURL =
+  import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_API_URL || "";
 
 const api = axios.create({
-  baseURL: 'http://localhost:5000',
-  withCredentials: false
+  baseURL,
+  withCredentials: false,
 });
 
 // Simplified request interceptor

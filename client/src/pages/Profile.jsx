@@ -25,6 +25,7 @@ import {
   BedDouble,
   Building,
   Edit,
+  ReceiptIndianRupee,
 } from "lucide-react";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
@@ -61,7 +62,6 @@ export default function ProfilePage() {
     const fetchUserData = async () => {
       try {
         const userRes = await api.get("/api/user/profile");
-        // console.log("Userdata",userRes.data.userData.name)
         setUserData(userRes.data.userData);
         const bookingRes = await api.get("/api/booking/my-bookings");
         setBookings(bookingRes.data || []);
@@ -137,20 +137,22 @@ export default function ProfilePage() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       <Toaster />
-      <Header />
+      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-10">
+        <Header />
+      </div>
       <section className="bg-gradient-to-r from-purple-600 to-purple-800 text-white py-12 md:py-20">
         <div className="container mx-auto px-6 flex flex-col items-center">
           <h1 className="text-3xl md:text-4xl font-bold text-center">
             {userData?.name}'s Profile
           </h1>
           <div className="mt-6">
-            <Avatar className="w-32 h-32 mx-auto">
+            <Avatar className="w-40 h-40 mx-auto">
               <AvatarImage
-                src={formData?.profileImage || "/icon.png"}
+                src={userData?.avatar || "/icon.png"}
                 alt={userData?.name || "U"}
               />
               <AvatarFallback className="bg-purple-100 text-purple-600">
-                U
+                {userData?.name?.charAt(0) || "U"}
               </AvatarFallback>
             </Avatar>
           </div>
@@ -190,15 +192,6 @@ export default function ProfilePage() {
                                 <Input
                                   id="name"
                                   defaultValue={userData?.name}
-                                  className="col-span-2 h-8"
-                                  onChange={handleValueChange}
-                                />
-                              </div>
-                              <div className="grid grid-cols-3 items-center gap-4">
-                                <Label htmlFor="email">E-mail</Label>
-                                <Input
-                                  id="email"
-                                  defaultValue={userData?.email}
                                   className="col-span-2 h-8"
                                   onChange={handleValueChange}
                                 />
@@ -244,7 +237,7 @@ export default function ProfilePage() {
                       <p className="font-semibold flex flex-row">
                         <Phone className="mx-2 w-4 text-purple-800" /> Phone:
                       </p>
-                      <p>{userData.phone}</p>
+                      <p>{userData.phone ? userData.phone : "NA"}</p>
                     </div>
                     <div className="mt-4 text-gray-700 flex flex-row space-x-2">
                       <p className="font-semibold flex flex-row">
@@ -295,6 +288,10 @@ export default function ProfilePage() {
                 <TableHeader>
                   <TableRow>
                     <TableHead className="text-purple-500 hover:text-purple-900">
+                      <ReceiptIndianRupee className="w-4 h-4 inline mr-2 " />
+                      Receipt ID
+                    </TableHead>
+                    <TableHead className="text-purple-500 hover:text-purple-900">
                       <Building className="w-4 h-4 inline mr-2 " />
                       Hostel
                     </TableHead>
@@ -322,7 +319,8 @@ export default function ProfilePage() {
                 </TableHeader>
                 <TableBody>
                   {filteredBookings.map((booking) => (
-                    <TableRow key={booking.transactionId}>
+                    <TableRow key={booking.receiptId}>
+                      <TableCell>{booking.receiptId}</TableCell>
                       <TableCell className="font-medium">
                         {booking.hostelId}
                       </TableCell>
