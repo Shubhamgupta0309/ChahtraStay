@@ -224,7 +224,7 @@ export default function HostelDetails() {
       });
   }
 
-  document.title = `${hostel.name} | TravelTribe`;
+  document.title = `${hostel.name} | ChahtraStay`;
 
   return (
     <div className="min-h-screen bg-gray-50">

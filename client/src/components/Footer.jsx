@@ -26,7 +26,7 @@ const Footer = () => {
         email,
       });
       toast({
-        title: "Thank you for subscribing to TravelTribe!",
+  title: "Thank you for subscribing to ChahtraStay!",
       });
       setEmail("");
     } catch (error) {
@@ -42,7 +42,7 @@ const Footer = () => {
       <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-6">
         <div>
           <Toaster />
-          <h2 className="text-2xl font-bold">TravelTribe</h2>
+          <h2 className="text-2xl font-bold">ChahtraStay</h2>
           <p className="mt-2 text-gray-400">
             Your trusted hostel booking platform. Find budget-friendly stays
             with ease.
@@ -85,7 +85,7 @@ const Footer = () => {
             </li>
             <li>
               <a
-                href="mailto:support@TravelTribe.com"
+                href="mailto:support@ChahtraStay.com"
                 className="hover:text-white"
               >
                 Email Us
@@ -129,7 +129,7 @@ const Footer = () => {
       </div>
 
       <div className="mt-8 mb-10 text-center text-gray-500 text-sm border-t border-gray-700 pt-4">
-        <p>© {new Date().getFullYear()} TravelTribe. All rights reserved.</p>
+  <p>© {new Date().getFullYear()} ChahtraStay. All rights reserved.</p>
         <a href="#" className="hover:text-white mx-2">
           Terms of Service
         </a>{" "}

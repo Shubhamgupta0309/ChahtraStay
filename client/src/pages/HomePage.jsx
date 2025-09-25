@@ -37,7 +37,7 @@ export default function HomePage() {
       img: "/dheeru.png",
       name: "Dheeru Gupta",
       review:
-        "TravelTribe made my hostel search so much easier! The website is user-friendly, and I found the perfect place near my college within minutes.",
+  "ChahtraStay made my hostel search so much easier! The website is user-friendly, and I found the perfect place near my college within minutes.",
     },
     {
       id: 2,
@@ -51,14 +51,14 @@ export default function HomePage() {
       img: "/harshal.png",
       name: "Harshal Dangela",
       review:
-        "I was struggling to find a good hostel near my college, but TravelTribe provided me with great options. The reviews and amenities section were really helpful!",
+  "I was struggling to find a good hostel near my college, but ChahtraStay provided me with great options. The reviews and amenities section were really helpful!",
     },
     {
       id: 4,
       img: "/shubham.png",
       name: "Shubham Gupta",
       review:
-        "TravelTribe saved me so much time! I could easily compare hostels, check prices, and choose the best one that suited my budget and needs.",
+  "ChahtraStay saved me so much time! I could easily compare hostels, check prices, and choose the best one that suited my budget and needs.",
     },
     {
       id: 5,
@@ -90,7 +90,7 @@ export default function HomePage() {
   }, []);
   const plugin = useRef(Autoplay({ delay: 2000, stopOnInteraction: false }));
   const navigate = useNavigate();
-  document.title="TravelTribe"
+  document.title="ChahtraStay"
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-10">
@@ -101,7 +101,7 @@ export default function HomePage() {
         <div className="flex flex-col items-start md:w-1/2 space-y-6 z-10">
           <div className="space-y-4">
             <h1 className="text-5xl md:text-6xl text-purple-600 font-bold tracking-tight">
-              TravelTribe
+              ChahtraStay
             </h1>
             <h3 className="text-3xl md:text-4xl font-bold text-gray-900">
               Find Your Perfect Stay!

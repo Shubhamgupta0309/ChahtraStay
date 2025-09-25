@@ -50,7 +50,7 @@ function Contact() {
     }
   };
 
-  document.title = "Contact TravelTribe";
+  document.title = "Contact ChahtraStay";
 
   return (
     <div className="flex flex-col min-h-screen w-full bg-gray-100">
@@ -63,7 +63,7 @@ function Contact() {
           <h1 className="text-4xl font-bold text-gray-900">Contact & Support</h1>
           <p className="text-gray-600 mt-3">
             Need help? Fill out the form below or email us at
-            <a href="mailto:help@TravelTribe.com" className="text-purple-700 font-medium"> help@TravelTribe.com</a>
+            <a href="mailto:help@ChahtraStay.com" className="text-purple-700 font-medium"> help@ChahtraStay.com</a>
           </p>
         </div>
 

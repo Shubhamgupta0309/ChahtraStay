@@ -293,7 +293,7 @@ export default function HostelBooking() {
     if (currentStep > 1) setCurrentStep(currentStep - 1);
   };
 
-  document.title = "Book hostel at TravelTribe";
+  document.title = "Book hostel at ChahtraStay";
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -589,7 +589,7 @@ export default function HostelBooking() {
                               onChange={handleInputChange}
                               required
                               className="pl-10 border-gray-300 focus:border-purple-500 focus:ring focus:ring-purple-200 transition-all"
-                              placeholder="krsna@traveltribe.com"
+                              placeholder="krsna@chahtrastay.com"
                               disabled={isSubmitting}
                             />
                             <Mail className="absolute left-3 top-3 h-4 w-4 text-purple-500" />

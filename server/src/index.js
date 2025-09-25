@@ -21,7 +21,7 @@ const PORT = process.env.PORT;
 connectDB();
 app.get("/api", (req, res) => {
   res.status(200).json({
-    message: "Welcom to TravelTribe",
+    message: "Welcome to ChahtraStay",
   });
 });
 app.use("/api/user", userRoutes);

@@ -40,7 +40,7 @@ const collegesList = [
 ];
 import { useNavigate } from "react-router-dom";
 const AdminDashboard = () => {
-  document.title = "Dashboard TravelTribe";
+  document.title = "Dashboard ChahtraStay";
   const [hostels, setHostels] = useState([]);
   const [users, setUsers] = useState([]);
   const [bookings, setBookings] = useState([]);

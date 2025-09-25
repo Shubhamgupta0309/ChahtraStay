@@ -96,7 +96,7 @@ const Login = () => {
     }
   };
 
-  document.title = "Login | TravelTribe";
+  document.title = "Login | ChahtraStay";
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-purple-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -104,7 +104,7 @@ const Login = () => {
         <Toaster />
         <CardContent className="p-6 bg-white rounded-lg">
           <h2 className="text-center text-2xl font-bold text-purple-700">
-            Travel Tribe
+            ChahtraStay
           </h2>
           <p className="text-center text-gray-600 mb-4">
             Welcome! Sign in or create an account.

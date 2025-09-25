@@ -4,7 +4,7 @@ import { Card, CardTitle, CardContent } from "@/components/ui/card";
 import React from "react";
 
 function About() {
-  document.title="About TravelTribe"
+  document.title="About ChahtraStay"
   return (
     <div className="flex flex-col min-h-screen w-full bg-purple-50">
         <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-10">
@@ -18,14 +18,14 @@ function About() {
 
         <Card className="w-full max-w-3xl p-6 shadow-lg">
           <CardTitle className="text-xl mb-4 text-purple-900">
-            What is TravelTribe?
+            What is ChahtraStay?
           </CardTitle>
           <CardContent>
             <p className="text-gray-700 leading-relaxed">
-              TravelTribe is a student-focused hostel booking platform designed
+              ChahtraStay is a student-focused hostel booking platform designed
               to simplify the search for affordable and comfortable
               accommodations. Whether you're a student moving to a new city or a
-              traveler looking for a budget stay, TravelTribe helps you find
+              traveler looking for a budget stay, ChahtraStay helps you find
               well-reviewed hostels with ease.
             </p>
           </CardContent>
@@ -52,7 +52,7 @@ function About() {
           </CardTitle>
           <CardContent>
             <p className="text-gray-700 leading-relaxed">
-              TravelTribe is more than just a booking platform—it’s a growing
+              ChahtraStay is more than just a booking platform—it’s a growing
               community of students and travelers sharing real experiences. Join
               us in creating a trusted network of accommodations for students
               everywhere!

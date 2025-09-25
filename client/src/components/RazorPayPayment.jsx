@@ -54,7 +54,7 @@ const RazorPayPayment = ({hostelId, formData, validateForm }) => {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: orderResponse.data.amount,
         currency: "INR",
-        name: "Travel Tribe",
+  name: "ChahtraStay",
         description: "Hostel Booking Payment",
         order_id: orderResponse.data.id,
         handler: async (response) => {
