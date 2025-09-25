@@ -29,7 +29,6 @@ import {
 import { useNavigate } from "react-router-dom";
 import api from "@/api";
 import { Toaster } from "@/components/ui/toaster";
-import ApiDemo from "@/components/ApiDemo";
 
 export default function HomePage() {
   const testimonials = [
@@ -98,8 +97,6 @@ export default function HomePage() {
         <Header />
       </div>
   <Toaster />
-  {/* Small demo that calls /api/hello and /api/users (Vercel-style functions) */}
-  <ApiDemo />
       <section className="relative min-h-screen flex flex-col md:flex-row items-center justify-center w-full px-6 md:px-16 pt-20 bg-gradient-to-br from-purple-50 via-white to-purple-50">
         <div className="flex flex-col items-start md:w-1/2 space-y-6 z-10">
           <div className="space-y-4">
